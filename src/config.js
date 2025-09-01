@@ -1,20 +1,11 @@
-// For production, it's recommended to use environment variables.
-// Example: process.env.PORT, process.env.FRONTEND_URL, etc.
-
-require('dotenv').config(); // Add this line at the very top
+const crypto = require('crypto');
+require('dotenv').config();
 
 const config = {
-  port: process.env.PORT || 8008,
-
-  // URL of the frontend application for CORS configuration
-  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
-
-  // IMPORTANT: This is a default secret.
-  // For production, you MUST use a strong, unique secret and keep it secure.
-  // It's highly recommended to load this from an environment variable.
-  jwtSecret: process.env.JWT_SECRET || 'my-secret-starcade-key-12345', // Fallback for safety
-
-  cookieDomain: process.env.COOKIE_DOMAIN || 'localhost', // Add this line
+  port: process.env.PORT || 8080,
+  frontendUrl: process.env.FRONTEND_URL || 'https://uzulee.github.io/starcade/',
+  jwtSecret: process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex'),
+  cookieDomain: process.env.COOKIE_DOMAIN || 'uzulee.github.io',
 };
 
 module.exports = config;
