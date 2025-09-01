@@ -1,0 +1,18 @@
+{
+  "registration_verification": [
+    {
+      "name": "default",
+      "text_template": "registration_verification.txt",
+      "html_template": "registration_verification.html",
+      "weight": 100
+    }
+  ],
+  "account_deletion_verification": [
+    {
+      "name": "default",
+      "text_template": "account_deletion_verification.txt",
+      "html_template": "account_deletion_verification.html",
+      "weight": 100
+    }
+  ]
+}
