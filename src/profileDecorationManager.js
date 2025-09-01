@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const chokidar = require('chokidar');
 
 const DECORATIONS_DIR = path.join(__dirname, 'profileDecorations');
 
@@ -33,12 +34,17 @@ function loadDecorations() {
 loadDecorations();
 
 if (process.env.NODE_ENV !== 'production') {
-    fs.watch(DECORATIONS_DIR, { recursive: true }, (eventType, filename) => {
-        if (filename && filename.endsWith('index.js')) {
-            console.log(`Detected change in ${filename}, reloading profile decorations...`);
-            loadDecorations();
-        }
+    const watcher = chokidar.watch(path.join(DECORATIONS_DIR, '**', 'index.js'), {
+        persistent: true,
+        ignoreInitial: true,
     });
+
+    const reload = (filePath) => {
+        console.log(`Detected change in ${filePath}, reloading profile decorations...`);
+        loadDecorations();
+    };
+
+    watcher.on('add', reload).on('change', reload).on('unlink', reload);
 }
 
 const getAllProfileDecorations = () => {

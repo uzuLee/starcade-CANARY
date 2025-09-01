@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const chokidar = require('chokidar');
 
 const ACHIEVEMENTS_DIR = path.join(__dirname, 'achievements');
 
@@ -41,12 +42,17 @@ loadTitles();
 
 // Watch for changes in the achievements directory if not in production
 if (process.env.NODE_ENV !== 'production') {
-    fs.watch(ACHIEVEMENTS_DIR, { recursive: true }, (eventType, filename) => {
-        if (filename && filename.endsWith('index.js')) {
-            console.log(`Detected change in ${filename}, reloading titles...`);
-            loadTitles();
-        }
+    const watcher = chokidar.watch(path.join(ACHIEVEMENTS_DIR, '**', 'index.js'), {
+        persistent: true,
+        ignoreInitial: true,
     });
+
+    const reload = (filePath) => {
+        console.log(`Detected change in ${filePath}, reloading titles...`);
+        loadTitles();
+    };
+
+    watcher.on('add', reload).on('change', reload).on('unlink', reload);
 }
 
 const getAllTitles = () => {

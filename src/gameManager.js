@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const chokidar = require('chokidar');
 
 const GAMES_DIR = path.join(__dirname, 'games');
 
@@ -27,12 +28,17 @@ loadGames();
 
 // Watch for changes in the games directory if not in production
 if (process.env.NODE_ENV !== 'production') {
-    fs.watch(GAMES_DIR, (eventType, filename) => {
-        if (filename && filename.endsWith('.js')) {
-            console.log(`Detected change in ${filename}, reloading games...`);
-            loadGames();
-        }
+    const watcher = chokidar.watch(path.join(GAMES_DIR, '**', '*.js'), {
+        persistent: true,
+        ignoreInitial: true,
     });
+
+    const reload = (filePath) => {
+        console.log(`Detected change in ${filePath}, reloading games...`);
+        loadGames();
+    };
+
+    watcher.on('add', reload).on('change', reload).on('unlink', reload);
 }
 
 const getGames = () => {

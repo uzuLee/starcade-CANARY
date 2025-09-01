@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const chokidar = require('chokidar');
 
 const MESSAGES_DIR = path.join(__dirname, 'messages');
 let messageCache = {
@@ -10,25 +11,33 @@ let messageCache = {
 
 const loadMessages = () => {
     try {
+        // Reset cache before loading
+        messageCache = { general: [], jokes: [], game_hints: {} };
+
         // Load general messages
         const generalPath = path.join(MESSAGES_DIR, 'general.js');
-        delete require.cache[require.resolve(generalPath)];
-        messageCache.general = require(generalPath).generalMessages;
+        if (fs.existsSync(generalPath)) {
+            delete require.cache[require.resolve(generalPath)];
+            messageCache.general = require(generalPath).generalMessages;
+        }
 
         // Load jokes
         const jokesPath = path.join(MESSAGES_DIR, 'general_jokes.js');
-        delete require.cache[require.resolve(jokesPath)];
-        messageCache.jokes = require(jokesPath).generalJokes;
+        if (fs.existsSync(jokesPath)) {
+            delete require.cache[require.resolve(jokesPath)];
+            messageCache.jokes = require(jokesPath).generalJokes;
+        }
 
         // Load game hints
         const hintsDir = path.join(MESSAGES_DIR, 'game_hints');
-        const hintFiles = fs.readdirSync(hintsDir).filter(file => file.endsWith('.js'));
-        messageCache.game_hints = {}; // Reset hints
-        for (const file of hintFiles) {
-            const topic = path.basename(file, '.js');
-            const hintPath = path.join(hintsDir, file);
-            delete require.cache[require.resolve(hintPath)];
-            messageCache.game_hints[topic] = require(hintPath).gameHints;
+        if (fs.existsSync(hintsDir)) {
+            const hintFiles = fs.readdirSync(hintsDir).filter(file => file.endsWith('.js'));
+            for (const file of hintFiles) {
+                const topic = path.basename(file, '.js');
+                const hintPath = path.join(hintsDir, file);
+                delete require.cache[require.resolve(hintPath)];
+                messageCache.game_hints[topic] = require(hintPath).gameHints;
+            }
         }
         console.log('Successfully loaded messages.');
     } catch (error) {
@@ -42,12 +51,17 @@ loadMessages();
 
 // Watch for changes if not in production
 if (process.env.NODE_ENV !== 'production') {
-    fs.watch(MESSAGES_DIR, { recursive: true }, (eventType, filename) => {
-        if (filename && filename.endsWith('.js')) {
-            console.log(`Detected change in ${filename}, reloading messages...`);
-            loadMessages();
-        }
+    const watcher = chokidar.watch(path.join(MESSAGES_DIR, '**', '*.js'), {
+        persistent: true,
+        ignoreInitial: true,
     });
+
+    const reload = (filePath) => {
+        console.log(`Detected change in ${filePath}, reloading messages...`);
+        loadMessages();
+    };
+
+    watcher.on('add', reload).on('change', reload).on('unlink', reload);
 }
 
 const getRandomMessage = (topic) => {

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const chokidar = require('chokidar');
 
 const ACHIEVEMENTS_DIR = path.join(__dirname, 'achievements');
 const achievements = {};
@@ -14,6 +15,10 @@ function loadAchievements() {
         const achievementFolders = fs.readdirSync(ACHIEVEMENTS_DIR, { withFileTypes: true })
             .filter(dirent => dirent.isDirectory())
             .map(dirent => dirent.name);
+
+        for (const id in achievements) {
+            delete achievements[id];
+        }
 
         for (const folder of achievementFolders) {
             const indexPath = path.join(ACHIEVEMENTS_DIR, folder, 'index.js');
@@ -34,12 +39,17 @@ function loadAchievements() {
 loadAchievements();
 
 if (process.env.NODE_ENV !== 'production') {
-    fs.watch(ACHIEVEMENTS_DIR, { recursive: true }, (eventType, filename) => {
-        if (filename && filename.endsWith('index.js')) {
-            console.log(`Detected change in ${filename}, reloading achievements...`);
-            loadAchievements();
-        }
+    const watcher = chokidar.watch(path.join(ACHIEVEMENTS_DIR, '**', 'index.js'), {
+        persistent: true,
+        ignoreInitial: true,
     });
+
+    const reload = (filePath) => {
+        console.log(`Detected change in ${filePath}, reloading achievements...`);
+        loadAchievements();
+    };
+
+    watcher.on('add', reload).on('change', reload).on('unlink', reload);
 }
 
 const evaluateAchievements = (currentUser, gameData, scoreData) => {

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const chokidar = require('chokidar');
 
 const EFFECTS_DIR = path.join(__dirname, 'profileEffects'); // 경로 변경
 
@@ -33,12 +34,17 @@ function loadEffects() {
 loadEffects();
 
 if (process.env.NODE_ENV !== 'production') {
-    fs.watch(EFFECTS_DIR, { recursive: true }, (eventType, filename) => {
-        if (filename && filename.endsWith('index.js')) {
-            console.log(`Detected change in ${filename}, reloading profile effects...`);
-            loadEffects();
-        }
+    const watcher = chokidar.watch(path.join(EFFECTS_DIR, '**', 'index.js'), {
+        persistent: true,
+        ignoreInitial: true,
     });
+
+    const reload = (filePath) => {
+        console.log(`Detected change in ${filePath}, reloading profile effects...`);
+        loadEffects();
+    };
+
+    watcher.on('add', reload).on('change', reload).on('unlink', reload);
 }
 
 const getAllEffects = () => {
