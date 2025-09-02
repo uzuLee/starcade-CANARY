@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'sudokuConfident',
   name: '자신감 넘치는 해결사',
   description: '스도쿠 게임을 \'검사\' 버튼을 한 번도 사용하지 않고 클리어했습니다.',

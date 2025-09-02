@@ -1,6 +1,6 @@
 const THRESHOLD = 50;
 
-export default {
+module.exports = {
   id: 'memoryLucky',
   name: '운빨 천재',
   description: `카드 맞추기 게임을 ${THRESHOLD}회 미만 이동으로 클리어했습니다.`,

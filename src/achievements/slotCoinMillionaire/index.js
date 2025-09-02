@@ -4,7 +4,7 @@ const TIERS = [
   { threshold: 25000, name: '코인 황제', icon: '👑' },
 ];
 
-export default {
+module.exports = {
   id: 'slotCoinMillionaire',
   name: '코인 수집가',
   description: '슬롯머신에서 달성한 최대 코인 보유량에 따라 티어가 부여됩니다.',

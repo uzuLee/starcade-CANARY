@@ -17,7 +17,7 @@ function loadDecorations() {
             const indexPath = path.join(DECORATIONS_DIR, folder, 'index.js');
             if (fs.existsSync(indexPath)) {
                 delete require.cache[require.resolve(indexPath)];
-                const decorationModule = require(indexPath).default;
+                const decorationModule = require(indexPath);
                 if (decorationModule && decorationModule.id) {
                     decorations.push(decorationModule);
                 }

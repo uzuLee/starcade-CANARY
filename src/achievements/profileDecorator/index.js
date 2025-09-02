@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'profileDecorator',
   name: '프로필 꾸미기',
   description: '프로필 효과를 처음으로 적용했습니다.',

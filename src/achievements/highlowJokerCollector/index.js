@@ -1,6 +1,6 @@
 const THRESHOLD = 3;
 
-export default {
+module.exports = {
   id: 'highlowJokerCollector',
   name: '조커 수집가',
   description: `하이로우 게임에서 조커 카드를 ${THRESHOLD}번 이상 뽑았습니다.`,

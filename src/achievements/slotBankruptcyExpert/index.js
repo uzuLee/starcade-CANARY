@@ -1,6 +1,6 @@
 const THRESHOLD = 5;
 
-export default {
+module.exports = {
   id: 'slotBankruptcyExpert',
   name: '파산 전문가',
   description: `슬롯머신 게임에서 ${THRESHOLD}번 이상 파산했습니다.`,

@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'g2048LuckyBeginner',
   name: '초보의 행운',
   description: '2048 타일을 500점 미만으로 달성했습니다.',

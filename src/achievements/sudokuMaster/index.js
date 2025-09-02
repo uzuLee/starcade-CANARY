@@ -4,7 +4,7 @@ const TIERS = [
   { threshold: 10, name: '골드', icon: '🥇' },
 ];
 
-export default {
+module.exports = {
   id: 'sudokuMaster',
   name: '스도쿠 마스터',
   description: '스도쿠를 클리어한 횟수에 따라 티어가 부여됩니다.',

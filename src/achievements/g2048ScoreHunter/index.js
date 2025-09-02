@@ -4,7 +4,7 @@ const TIERS = [
   { threshold: 100000, name: '점수 지배자', icon: '👑' },
 ];
 
-export default {
+module.exports = {
   id: 'g2048ScoreHunter',
   name: '점수 사냥꾼',
   description: '2048 게임에서 달성한 최고 점수에 따라 티어가 부여됩니다.',

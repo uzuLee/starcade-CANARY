@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'g2048_4096',
   name: '4096 달성',
   description: '2048 게임에서 4096 타일을 만들었습니다.',

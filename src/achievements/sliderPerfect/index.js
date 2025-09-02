@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'sliderPerfect',
   name: '최소 이동의 달인',
   description: '슬라이더 게임을 최소 이동 횟수(15회)로 클리어했습니다.',

@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'firstLoss',
   name: '패배도 경험이야',
   description: 'Starcade에서 첫 패배를 기록했습니다.',

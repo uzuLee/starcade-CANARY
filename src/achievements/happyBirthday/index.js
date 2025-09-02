@@ -4,7 +4,7 @@ const TIERS = [
   { threshold: 5, name: '생일 마스터', icon: '🎉' },
 ];
 
-export default {
+module.exports = {
   id: 'happyBirthday',
   name: 'Happy Birthday!',
   description: '생일에 Starcade에 접속한 횟수에 따라 티어가 부여됩니다.',

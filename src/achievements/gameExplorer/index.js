@@ -4,7 +4,7 @@ const TIERS = [
   { threshold: 5, name: '게임 마스터', icon: '🌲' },
 ];
 
-export default {
+module.exports = {
   id: 'gameExplorer',
   name: '게임 탐험가',
   description: '다양한 게임을 플레이하여 새로운 세계를 탐험하세요.',

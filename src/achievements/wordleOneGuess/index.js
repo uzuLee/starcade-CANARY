@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'wordleOneGuess',
   name: '단어 탐정',
   description: '워들 게임에서 1회 시도만에 정답을 맞췄습니다.',

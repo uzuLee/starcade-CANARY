@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'longTimeNoSee',
   name: '오랜만이야!',
   description: '오랜만에 Starcade에 접속했습니다. (7일 이상 미접속)',

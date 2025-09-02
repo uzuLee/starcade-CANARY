@@ -4,7 +4,7 @@ const TIERS = [
   { threshold: 10, name: '기억력 마스터', icon: '🌲' },
 ];
 
-export default {
+module.exports = {
   id: 'memoryMaster',
   name: '기억력 마스터',
   description: '카드 맞추기 게임을 클리어한 횟수에 따라 티어가 부여됩니다.',

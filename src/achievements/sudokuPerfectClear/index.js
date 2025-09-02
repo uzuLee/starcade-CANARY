@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'sudokuPerfectClear',
   name: '완벽한 스도쿠',
   description: '오답 없이 스도쿠를 클리어했습니다.',

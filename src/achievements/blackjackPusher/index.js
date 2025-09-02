@@ -1,6 +1,6 @@
 const THRESHOLD = 5;
 
-export default {
+module.exports = {
   id: 'blackjackPusher',
   name: '밀당의 고수',
   description: `블랙잭 게임에서 한 덱으로 무승부(Push)를 ${THRESHOLD}번 이상 기록했습니다.`,

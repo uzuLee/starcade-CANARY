@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'firstFriend',
   name: '첫 친구',
   description: '첫 친구를 사귀었습니다.',

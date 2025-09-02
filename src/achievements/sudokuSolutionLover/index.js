@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'sudokuSolutionLover',
   name: '정답지 애용가',
   description: '스도쿠 정답을 3번 이상 확인하고 클리어했습니다.',

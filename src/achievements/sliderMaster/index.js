@@ -4,7 +4,7 @@ const TIERS = [
   { threshold: 10, name: '슬라이더 마스터', icon: '🌲' },
 ];
 
-export default {
+module.exports = {
   id: 'sliderMaster',
   name: '슬라이더 마스터',
   description: '슬라이더 게임을 클리어한 횟수에 따라 티어가 부여됩니다.',

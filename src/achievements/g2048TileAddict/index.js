@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'g2048TileAddict',
   name: '타일 중독자',
   description: '2048 게임에서 10000점 이상을 달성했습니다.',

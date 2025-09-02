@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'memoryFirstAttempt',
   name: '첫 카드 맞추기 시도',
   description: '카드 맞추기 게임을 처음으로 플레이했습니다.',

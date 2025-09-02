@@ -4,7 +4,7 @@ const TIERS = [
   { threshold: 180, name: '타임 어태커', icon: '⏱️' }, // 3분
 ];
 
-export default {
+module.exports = {
   id: 'sudokuSpeedDemon',
   name: '스피드 데몬',
   description: '스도쿠를 빠르게 클리어한 시간에 따라 티어가 부여됩니다. (보통 난이도 이상)',

@@ -1,6 +1,6 @@
 const THRESHOLD = 5;
 
-export default {
+module.exports = {
   id: 'blackjackDealerBuster',
   name: '딜러의 친구',
   description: `블랙잭 게임에서 딜러가 ${THRESHOLD}번 이상 버스트했습니다.`,

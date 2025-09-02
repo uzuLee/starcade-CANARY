@@ -1,6 +1,6 @@
 const THRESHOLD = 100;
 
-export default {
+module.exports = {
   id: 'memoryOverthinker',
   name: '고뇌의 시간',
   description: `카드 맞추기 게임을 ${THRESHOLD}회 이상 이동하여 클리어했습니다.`,

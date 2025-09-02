@@ -4,7 +4,7 @@ const TIERS = [
   { threshold: 10, name: '블랙잭 마스터', icon: '🌲' },
 ];
 
-export default {
+module.exports = {
   id: 'blackjackMaster',
   name: '블랙잭 마스터',
   description: '블랙잭 게임에서 승리한 횟수에 따라 티어가 부여됩니다.',

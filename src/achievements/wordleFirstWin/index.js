@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'wordleFirstWin',
   name: '워들 초보',
   description: '워들 게임에서 첫 승리를 기록했습니다.',

@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'wordleLastChance',
   name: '아슬아슬 워들',
   description: '워들 게임에서 6회 시도만에 정답을 맞췄습니다.',

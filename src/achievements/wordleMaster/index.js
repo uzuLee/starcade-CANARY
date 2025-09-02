@@ -4,7 +4,7 @@ const TIERS = [
   { threshold: 10, name: '워들 마스터', icon: '🌲' },
 ];
 
-export default {
+module.exports = {
   id: 'wordleMaster',
   name: '워들 마스터',
   description: '워들 게임에서 승리한 횟수에 따라 티어가 부여됩니다.',

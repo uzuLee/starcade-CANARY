@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'testAch4',
   name: '테스트 도전과제 4',
   description: '테스트용 도전과제입니다.',

@@ -17,7 +17,7 @@ function loadCardEffects() {
             const indexPath = path.join(EFFECTS_DIR, folder, 'index.js');
             if (fs.existsSync(indexPath)) {
                 delete require.cache[require.resolve(indexPath)];
-                const effectModule = require(indexPath).default;
+                const effectModule = require(indexPath);
                 if (effectModule && effectModule.id) {
                     effects.push(effectModule);
                 }

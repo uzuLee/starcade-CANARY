@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'memoryPerfect',
   name: '완벽한 기억력',
   description: '카드 맞추기 게임을 최소 이동 횟수(12회)로 클리어했습니다.',

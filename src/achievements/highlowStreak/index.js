@@ -1,6 +1,6 @@
 const THRESHOLD = 5;
 
-export default {
+module.exports = {
   id: 'highlowStreak',
   name: '연속 하이로우',
   description: `${THRESHOLD}연승을 달성했습니다.`,

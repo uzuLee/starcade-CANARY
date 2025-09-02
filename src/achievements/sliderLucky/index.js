@@ -1,6 +1,6 @@
 const THRESHOLD = 50;
 
-export default {
+module.exports = {
   id: 'sliderLucky',
   name: '운빨 슬라이더',
   description: `슬라이더 게임을 ${THRESHOLD}회 미만 이동으로 클리어했습니다.`,

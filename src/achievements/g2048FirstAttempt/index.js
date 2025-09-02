@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'g2048FirstAttempt',
   name: '첫 2048 시도',
   description: '2048 게임을 처음으로 플레이했습니다.',

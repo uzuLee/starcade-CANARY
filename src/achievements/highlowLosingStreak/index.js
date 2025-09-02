@@ -1,6 +1,6 @@
 const THRESHOLD = 5;
 
-export default {
+module.exports = {
   id: 'highlowLosingStreak',
   name: '운빨 망겜',
   description: `${THRESHOLD}연패를 달성했습니다.`,

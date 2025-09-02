@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'blackjackFirstAttempt',
   name: '첫 블랙잭 시도',
   description: '블랙잭 게임을 처음으로 플레이했습니다.',

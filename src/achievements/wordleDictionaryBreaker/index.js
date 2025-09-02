@@ -1,6 +1,6 @@
 const THRESHOLD = 5;
 
-export default {
+module.exports = {
   id: 'wordleDictionaryBreaker',
   name: '사전 파괴자',
   description: `워들 게임에서 단어 목록에 없는 단어를 ${THRESHOLD}번 이상 시도했습니다.`,

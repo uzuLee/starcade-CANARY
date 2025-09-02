@@ -24,7 +24,7 @@ function loadAchievements() {
             const indexPath = path.join(ACHIEVEMENTS_DIR, folder, 'index.js');
             if (fs.existsSync(indexPath)) {
                 delete require.cache[require.resolve(indexPath)];
-                const achievementModule = require(indexPath).default;
+                const achievementModule = require(indexPath);
                 if (achievementModule && achievementModule.id) {
                     achievements[achievementModule.id] = achievementModule;
                 }

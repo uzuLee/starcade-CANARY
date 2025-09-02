@@ -4,7 +4,7 @@ const TIERS = [
   { threshold: 30, name: '성실한 개근상', icon: '🏆' },
 ];
 
-export default {
+module.exports = {
   id: 'frequentVisitor',
   name: '자주 출석',
   description: '연속 출석 일수에 따라 티어가 부여됩니다.',

@@ -1,6 +1,6 @@
 const THRESHOLD = 100;
 
-export default {
+module.exports = {
   id: 'slotAddict',
   name: '도박 중독자',
   description: `슬롯머신 게임에서 ${THRESHOLD}회 이상 스핀했습니다.`,

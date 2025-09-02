@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'blackjackNatural',
   name: '블랙잭의 신',
   description: '첫 두 장으로 블랙잭을 달성했습니다.',

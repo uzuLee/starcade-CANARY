@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'sudokuEndlessChecker',
   name: '무한 검사자',
   description: `스도쿠 '검사' 버튼을 10번 이상 누르고 클리어했습니다.`,

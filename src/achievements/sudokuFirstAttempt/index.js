@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'sudokuFirstAttempt',
   name: '첫 스도쿠 시도',
   description: '스도쿠 게임을 처음으로 플레이했습니다.',

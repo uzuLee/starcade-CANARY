@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'memoryClear',
   name: '기억력 초보',
   description: '카드 맞추기 게임을 1회 클리어했습니다.',

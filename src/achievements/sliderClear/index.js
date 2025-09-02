@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   id: 'sliderClear',
   name: '슬라이더 초보',
   description: '슬라이더 게임을 1회 클리어했습니다.',
