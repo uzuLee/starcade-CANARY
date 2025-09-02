@@ -182,8 +182,24 @@ module.exports = (app, io, { userRepository, socketRepository, redisManager }, j
         await userRepository.saveUser(userToUpdate);
         await redisManager.persistUser(userToUpdate.id);
         
-        // Re-fetch the user to get the latest full data
-        const finalUser = await userRepository.getUser(id);
+        // Re-fetch the user to get the latest full data, and inflate if master
+        let finalUser = await userRepository.getUser(id);
+        if (finalUser.isMaster) {
+            const allAchievements = getAllAchievementDefinitions().map(def => ({
+                id: def.id, name: def.name, description: def.description, icon: def.icon, progress: 1,
+                tier: def.tiers ? def.tiers[def.tiers.length - 1] : null, unlockedAt: new Date().toISOString(),
+            }));
+
+            finalUser = { 
+                ...finalUser, 
+                achievements: allAchievements,
+                unlockedEffects: getAllEffects().map(e => e.id),
+                unlockedTitles: getAllTitles(),
+                unlockedCardEffects: getAllCardEffects().map(e => e.id),
+                unlockedProfileDecorations: getAllProfileDecorations().map(d => d.id),
+                unlockedCardDecorations: getAllCardDecorations().map(d => d.id),
+            };
+        }
 
         res.json({ success: true, user: finalUser });
     });

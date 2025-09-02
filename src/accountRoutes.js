@@ -30,7 +30,7 @@ module.exports = (app, { userRepository, redisManager }, jwtSecret) => {
 
         const selectedTemplate = selectTemplate('account_deletion_verification');
         const mailOptions = {
-            from: 'starcade.service@stellatic.dev',
+            from: 'uzu_lee@icloud.com',
             to: email,
             subject: '[Starcade] 계정 삭제 인증 코드',
             text: await loadEmailTemplate(selectedTemplate.text_template, { name: user.name, code }),

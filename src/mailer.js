@@ -1,10 +1,12 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.mail.me.com',
+    port: 587,
+    secure: false, // STARTTLS
     auth: {
-        user: 'service.starcade@gmail.com',
-        pass: 'ktex nidg jilt zrgl'
+        user: 'uzu_lee@icloud.com',
+        pass: 'nppe-oxhe-kzcn-nhup'
     }
 });
 
