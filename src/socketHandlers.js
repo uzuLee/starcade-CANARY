@@ -37,19 +37,21 @@ module.exports = (io, { pubClient, subClient }, { userRepository, socketReposito
             socket.userId = userId;
             socket.join(userId);
             await socketRepository.addSocketIdForUser(userId, socket.id);
-            await userRepository.setConnectionStatus(userId, 'connected');
-            
-            // Re-fetch user after status update to ensure data consistency
+
+            // Re-fetch user and then get their real-time connection status
             const user = await userRepository.getUser(userId);
-            const displayStatus = await socketRepository.getDisplayStatus(userId, user.onlineStatus);
-            console.log(`[Socket] User ${userId} display status is now: ${displayStatus}`);
-            
-            io.to(userId).emit('statusUpdated', { 
-                status: displayStatus, 
-                connectionStatus: 'connected',
-                user: user // Send the freshest user object
-            });
-            broadcastStatus(userId);
+            if (user) {
+                user.connectionStatus = await socketRepository.getConnectionStatus(userId);
+                const displayStatus = await socketRepository.getDisplayStatus(userId, user.onlineStatus);
+                console.log(`[Socket] User ${userId} display status is now: ${displayStatus}`);
+                
+                io.to(userId).emit('statusUpdated', { 
+                    status: displayStatus, 
+                    connectionStatus: user.connectionStatus,
+                    user: user // Send the freshest user object
+                });
+                broadcastStatus(userId);
+            }
         });
 
         socket.on('disconnect', async () => {
