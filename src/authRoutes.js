@@ -198,7 +198,7 @@ module.exports = (app, { userRepository, redisManager }, jwtSecret, config) => {
             if (!user) {
                 return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
             }
-            user.isMaster = user.email === 'service.starcade@gmail.com';
+            user.isMaster = user.email === 'uzulee@stellatic.dev';
 
             const token = jwt.sign({ id: user.id }, jwtSecret, { expiresIn: '7d' });
             res.json({ success: true, user, token });
