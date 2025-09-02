@@ -36,7 +36,5 @@ const sendVerificationEmail = async (to, subject, text, html) => {
 
 module.exports = {
     sendVerificationEmail,
-    transporter // transporter도 함께 내보냅니다.
-};
-transporter도 함께 내보냅니다.
+    transporter
 };
