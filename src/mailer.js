@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
  */
 const sendVerificationEmail = async (to, subject, text, html) => {
     const mailOptions = {
-        from: '"Starcade Service" <service.starcade@gmail.com>',
+        from: '"Starcade Service" <starcade.service@stellatic.dev>',
         to,
         subject,
         text,
@@ -37,4 +37,6 @@ const sendVerificationEmail = async (to, subject, text, html) => {
 module.exports = {
     sendVerificationEmail,
     transporter // transporter도 함께 내보냅니다.
+};
+transporter도 함께 내보냅니다.
 };

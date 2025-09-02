@@ -152,7 +152,8 @@ module.exports = (app, { userRepository, redisManager }, jwtSecret, config) => {
                 unlockedEffects: [], unlockedCardEffects: [], unlockedProfileDecorations: [], unlockedCardDecorations: [],
                 profileVisibility: 'public', profileEffect: null, cardEffect: null, profileDecoration: null, cardDecoration: null,
                 displayedAchievements: [], description: '', onlineStatus: 'online', connectionStatus: 'disconnected',
-                title: '', unlockedTitles: [], birthday: null, isMaster: email === 'service.starcade@gmail.com', 
+                title: '', unlockedTitles: [], birthday: null, isMaster: email === 'uzulee@stellatic.dev',
+                money: 0,
                 settings: { arcadeMode: false },
             };
             await userRepository.saveUser(newUser);
@@ -222,7 +223,7 @@ module.exports = (app, { userRepository, redisManager }, jwtSecret, config) => {
             let userForDb = await userRepository.getUser(decoded.id);
 
             if (userForDb) {
-                userForDb.isMaster = userForDb.email === 'service.starcade@gmail.com';
+                userForDb.isMaster = userForDb.email === 'uzulee@stellatic.dev';
 
                 const today = new Date();
                 const todayDate = today.toISOString().split('T')[0];

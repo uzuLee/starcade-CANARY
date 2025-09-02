@@ -37,6 +37,12 @@ module.exports = (app, { userRepository, scoreRepository, redisManager }, jwtSec
         if (userId !== 'anonymous') {
             const currentUser = await userRepository.getUser(userId);
             if (currentUser) {
+                // Grant currency based on score
+                const currencyGained = Math.floor(score / 100);
+                if (currencyGained > 0) {
+                    currentUser.money = (currentUser.money || 0) + currencyGained;
+                }
+
                 const result = evaluateAchievements(currentUser, { gameId, ...options }, { score, ...options });
                 if (JSON.stringify(currentUser) !== JSON.stringify(result.updatedUser)) {
                     await userRepository.saveUser(result.updatedUser);

@@ -1,0 +1,33 @@
+name: DB Backup
+
+on:
+  schedule:
+    # Runs every day at midnight UTC
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # We need a token with write permissions to push changes
+          token: ${{ secrets.GH_TOKEN }} 
+
+      - name: Configure Git
+        run: |
+          git config user.name "Gemini Assistant"
+          git config user.email "gemini-assistant@users.noreply.github.com"
+
+      - name: Commit and push if changed
+        run: |
+          git add db.json
+          if git diff --staged --quiet; then
+            echo "No changes to db.json. Skipping commit."
+          else
+            git commit -m "chore(db): Automatic backup $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+            git push
+          fi
