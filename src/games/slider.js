@@ -4,4 +4,5 @@ module.exports = {
   icon: '🧩',
   topic: 'slider',
   description: '밀고, 정렬하기',
+  category: 'single-player',
 };

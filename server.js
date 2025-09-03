@@ -30,10 +30,26 @@ const cosmeticsRoutes = require('./src/cosmeticsRoutes');
 const socketHandlers = require('./src/socketHandlers');
 
 const app = express();
-app.use(cors({
-    origin: config.frontendUrl,
-    credentials: true
-}));
+const corsOptions = {
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            config.frontendUrl,
+            'http://localhost:5173',
+            'http://127.0.0.1:5173',
+        ];
+        // allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+};
+
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use((req, res, next) => {
     console.log('Server.js: req.cookies =', req.cookies);
@@ -43,11 +59,7 @@ app.use(express.json());
 
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: {
-        origin: config.frontendUrl,
-        methods: ["GET", "POST"],
-        credentials: true
-    }
+    cors: corsOptions
 });
 
 async function startServer() {

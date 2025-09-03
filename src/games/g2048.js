@@ -4,4 +4,5 @@ module.exports = {
   icon: '🧮',
   topic: 'g2048',
   description: '타일 합치기',
+  category: 'single-player',
 };

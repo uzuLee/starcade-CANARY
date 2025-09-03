@@ -4,4 +4,5 @@ module.exports = {
   icon: '🎰',
   topic: 'slot',
   description: '가벼운 운빨',
+  category: 'single-player',
 };

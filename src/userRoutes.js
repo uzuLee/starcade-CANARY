@@ -261,5 +261,97 @@ module.exports = (app, io, { userRepository, socketRepository, redisManager }, j
         res.json({ success: true, message: '사용자가 성공적으로 삭제되었습니다.' });
     });
 
-    // ... (rest of the file remains the same)
+    app.post('/api/users/:id/grant-achievement', authMiddleware, async (req, res) => {
+        if (!req.user || !req.user.isMaster) {
+            return res.status(403).json({ success: false, message: '권한이 없습니다.' });
+        }
+        const { achievementId } = req.body;
+        const { id: userId } = req.params;
+        const targetUser = await userRepository.getUser(userId);
+        if (!targetUser) {
+            return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        }
+        const achievementDef = getAllAchievementDefinitions().find(def => def.id === achievementId);
+        if (!achievementDef) {
+            return res.status(404).json({ success: false, message: '존재하지 않는 도전과제입니다.' });
+        }
+        if (!targetUser.achievements.some(a => a.id === achievementId)) {
+            targetUser.achievements.push({
+                id: achievementId,
+                progress: 1,
+                tier: null,
+                unlockedAt: new Date().toISOString(),
+            });
+            await userRepository.saveUser(targetUser);
+            await redisManager.persistUser(targetUser.id);
+            res.json({ success: true, message: '도전과제를 부여했습니다.' });
+        } else {
+            res.status(400).json({ success: false, message: '이미 보유한 도전과제입니다.' });
+        }
+    });
+
+    app.post('/api/users/:id/revoke-achievement', authMiddleware, async (req, res) => {
+        if (!req.user || !req.user.isMaster) {
+            return res.status(403).json({ success: false, message: '권한이 없습니다.' });
+        }
+        const { achievementId } = req.body;
+        const { id: userId } = req.params;
+        const targetUser = await userRepository.getUser(userId);
+        if (!targetUser) {
+            return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        }
+        const initialLength = targetUser.achievements.length;
+        targetUser.achievements = targetUser.achievements.filter(a => a.id !== achievementId);
+        if (targetUser.achievements.length < initialLength) {
+            await userRepository.saveUser(targetUser);
+            await redisManager.persistUser(targetUser.id);
+            res.json({ success: true, message: '도전과제를 회수했습니다.' });
+        } else {
+            res.status(400).json({ success: false, message: '보유하지 않은 도전과제입니다.' });
+        }
+    });
+
+    app.post('/api/users/:id/grant-title', authMiddleware, async (req, res) => {
+        if (!req.user || !req.user.isMaster) {
+            return res.status(403).json({ success: false, message: '권한이 없습니다.' });
+        }
+        const { title } = req.body;
+        const { id: userId } = req.params;
+        const targetUser = await userRepository.getUser(userId);
+        if (!targetUser) {
+            return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        }
+        if (!targetUser.unlockedTitles.includes(title)) {
+            targetUser.unlockedTitles.push(title);
+            await userRepository.saveUser(targetUser);
+            await redisManager.persistUser(targetUser.id);
+            res.json({ success: true, message: '칭호를 부여했습니다.' });
+        } else {
+            res.status(400).json({ success: false, message: '이미 보유한 칭호입니다.' });
+        }
+    });
+
+    app.post('/api/users/:id/revoke-title', authMiddleware, async (req, res) => {
+        if (!req.user || !req.user.isMaster) {
+            return res.status(403).json({ success: false, message: '권한이 없습니다.' });
+        }
+        const { title } = req.body;
+        const { id: userId } = req.params;
+        const targetUser = await userRepository.getUser(userId);
+        if (!targetUser) {
+            return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        }
+        const initialLength = targetUser.unlockedTitles.length;
+        targetUser.unlockedTitles = targetUser.unlockedTitles.filter(t => t !== title);
+        if (targetUser.unlockedTitles.length < initialLength) {
+            if (targetUser.title === title) {
+                targetUser.title = '';
+            }
+            await userRepository.saveUser(targetUser);
+            await redisManager.persistUser(targetUser.id);
+            res.json({ success: true, message: '칭호를 회수했습니다.' });
+        } else {
+            res.status(400).json({ success: false, message: '보유하지 않은 칭호입니다.' });
+        }
+    });
 };

@@ -4,4 +4,5 @@ module.exports = {
   icon: '🔤',
   topic: 'wordle',
   description: '영어 단어 맞추기',
+  category: 'single-player',
 };
