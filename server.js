@@ -82,7 +82,7 @@ async function startServer() {
         messageRoutes(app); // Register message routes
 
         // Register socket handlers
-        socketHandlers(io, { pubClient, subClient }, { userRepository, socketRepository });
+        // socketHandlers(io, { pubClient, subClient }, { userRepository, socketRepository });
 
         const PORT = config.port;
         server.listen(PORT, () => {
