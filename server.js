@@ -71,7 +71,7 @@ async function startServer() {
 
         // Register route handlers
         authRoutes(app, { userRepository, redisManager }, config.jwtSecret, config);
-        userRoutes(app, io, { userRepository, socketRepository, redisManager }, config.jwtSecret);
+        // userRoutes(app, io, { userRepository, socketRepository, redisManager }, config.jwtSecret);
         // friendRoutes(app, io, { userRepository, socketRepository, redisManager }, config.jwtSecret);
         scoreRoutes(app, { userRepository, scoreRepository, redisManager }, config.jwtSecret);
         achievementRoutes(app);
