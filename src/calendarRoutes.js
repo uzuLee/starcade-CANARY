@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { redisManager } = require('../redisManager');
+const { redisManager } = require('./redisManager');
 const createAuthMiddleware = require('../middleware/auth');
 const userRepository = require('../repositories/userRepository');
 
