@@ -52,6 +52,10 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 
+app.get('/socket.io/', (req, res) => {
+    res.send('Socket.IO path reached Express!');
+});
+
 const server = http.createServer(app);
 const io = new Server(server, { cors: corsOptions });
 
