@@ -37,6 +37,7 @@ const corsOptions = {
             config.frontendUrl,
             'http://localhost:5173',
             'http://127.0.0.1:5173',
+            'https://uzulee.github.io', // Hardcode production frontend
         ];
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
