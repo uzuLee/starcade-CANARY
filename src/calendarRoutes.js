@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { redisManager } = require('./redisManager');
+const { client } = require('./redisClient'); // Import client
 const createAuthMiddleware = require('./middleware/auth.js');
 const userRepository = require('./repositories/userRepository');
 
@@ -30,7 +30,7 @@ module.exports = (jwtSecret) => {
                 icon: icon || '🎉',
                 createdBy: req.user.id,
             };
-            await redisManager.client.hSet('starcade:events', eventId, JSON.stringify(event));
+            await client.hSet('starcade:events', eventId, JSON.stringify(event));
             res.status(201).json({ success: true, message: '이벤트가 성공적으로 추가되었습니다.', event });
         } catch (error) {
             console.error('Error adding calendar event:', error);
