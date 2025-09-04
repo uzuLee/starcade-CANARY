@@ -52,8 +52,8 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 
-app.get('/socket.io/', (req, res) => {
-    res.send('Socket.IO path reached Express!');
+app.get('/test-path/', (req, res) => {
+    res.send('Test path reached Express!');
 });
 
 const server = http.createServer(app);
@@ -72,7 +72,7 @@ async function startServer() {
         // Register route handlers
         authRoutes(app, { userRepository, redisManager }, config.jwtSecret, config);
         userRoutes(app, io, { userRepository, socketRepository, redisManager }, config.jwtSecret);
-        friendRoutes(app, io, { userRepository, socketRepository, redisManager }, config.jwtSecret);
+        // friendRoutes(app, io, { userRepository, socketRepository, redisManager }, config.jwtSecret);
         scoreRoutes(app, { userRepository, scoreRepository, redisManager }, config.jwtSecret);
         achievementRoutes(app);
         cosmeticsRoutes(app, redisManager, config.jwtSecret);
