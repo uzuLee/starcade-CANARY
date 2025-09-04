@@ -70,16 +70,16 @@ async function startServer() {
         await redisManager.loadInitialDataFromDb();
 
         // Register route handlers
-        authRoutes(app, { userRepository, redisManager }, config.jwtSecret, config);
+        // authRoutes(app, { userRepository, redisManager }, config.jwtSecret, config);
         // userRoutes(app, io, { userRepository, socketRepository, redisManager }, config.jwtSecret);
         // friendRoutes(app, io, { userRepository, socketRepository, redisManager }, config.jwtSecret);
-        scoreRoutes(app, { userRepository, scoreRepository, redisManager }, config.jwtSecret);
-        achievementRoutes(app);
-        cosmeticsRoutes(app, redisManager, config.jwtSecret);
-        app.use('/api/calendar', calendarRoutes(config.jwtSecret));
-        accountRoutes(app, { userRepository, redisManager }, config.jwtSecret);
-        gameRoutes(app);
-        messageRoutes(app); // Register message routes
+        // scoreRoutes(app, { userRepository, scoreRepository, redisManager }, config.jwtSecret);
+        // achievementRoutes(app);
+        // cosmeticsRoutes(app, redisManager, config.jwtSecret);
+        // app.use('/api/calendar', calendarRoutes(config.jwtSecret));
+        // accountRoutes(app, { userRepository, redisManager }, config.jwtSecret);
+        // gameRoutes(app);
+        // messageRoutes(app); // Register message routes
 
         // Register socket handlers
         // socketHandlers(io, { pubClient, subClient }, { userRepository, socketRepository });
