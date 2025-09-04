@@ -311,47 +311,56 @@ module.exports = (app, io, { userRepository, socketRepository, redisManager }, j
         }
     });
 
-    app.post('/api/users/:id/grant-title', authMiddleware, async (req, res) => {
+    app.post('/api/users/:id/toggle-item', authMiddleware, async (req, res) => {
         if (!req.user || !req.user.isMaster) {
             return res.status(403).json({ success: false, message: '권한이 없습니다.' });
         }
-        const { title } = req.body;
-        const { id: userId } = req.params;
-        const targetUser = await userRepository.getUser(userId);
-        if (!targetUser) {
-            return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        }
-        if (!targetUser.unlockedTitles.includes(title)) {
-            targetUser.unlockedTitles.push(title);
-            await userRepository.saveUser(targetUser);
-            await redisManager.persistUser(targetUser.id);
-            res.json({ success: true, message: '칭호를 부여했습니다.' });
-        } else {
-            res.status(400).json({ success: false, message: '이미 보유한 칭호입니다.' });
-        }
-    });
 
-    app.post('/api/users/:id/revoke-title', authMiddleware, async (req, res) => {
-        if (!req.user || !req.user.isMaster) {
-            return res.status(403).json({ success: false, message: '권한이 없습니다.' });
-        }
-        const { title } = req.body;
+        const { itemType, itemId, grant } = req.body;
         const { id: userId } = req.params;
+
+        const itemTypeToUserKey = {
+            profileEffect: 'unlockedEffects',
+            profileDecoration: 'unlockedProfileDecorations',
+            cardEffect: 'unlockedCardEffects',
+            cardDecoration: 'unlockedCardDecorations',
+            theme: 'unlockedThemes',
+            title: 'unlockedTitles'
+        };
+
+        const userKey = itemTypeToUserKey[itemType];
+        if (!userKey) {
+            return res.status(400).json({ success: false, message: '잘못된 아이템 타입입니다.' });
+        }
+
         const targetUser = await userRepository.getUser(userId);
         if (!targetUser) {
             return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
         }
-        const initialLength = targetUser.unlockedTitles.length;
-        targetUser.unlockedTitles = targetUser.unlockedTitles.filter(t => t !== title);
-        if (targetUser.unlockedTitles.length < initialLength) {
-            if (targetUser.title === title) {
-                targetUser.title = '';
-            }
-            await userRepository.saveUser(targetUser);
-            await redisManager.persistUser(targetUser.id);
-            res.json({ success: true, message: '칭호를 회수했습니다.' });
-        } else {
-            res.status(400).json({ success: false, message: '보유하지 않은 칭호입니다.' });
+
+        // Ensure the array exists
+        if (!Array.isArray(targetUser[userKey])) {
+            targetUser[userKey] = [];
         }
+
+        const hasItem = targetUser[userKey].includes(itemId);
+
+        if (grant) {
+            if (!hasItem) {
+                targetUser[userKey].push(itemId);
+            }
+        } else { // Revoke
+            if (hasItem) {
+                targetUser[userKey] = targetUser[userKey].filter(id => id !== itemId);
+                // If revoking a title that is currently equipped, unequip it.
+                if (itemType === 'title' && targetUser.title === itemId) {
+                    targetUser.title = '';
+                }
+            }
+        }
+
+        await userRepository.saveUser(targetUser);
+        await redisManager.persistUser(targetUser.id);
+        res.json({ success: true, message: `아이템 상태가 변경되었습니다.`, user: targetUser });
     });
 };

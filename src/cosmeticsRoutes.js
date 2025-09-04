@@ -71,6 +71,32 @@ module.exports = (app, redisManager, jwtSecret) => {
         }
     });
 
+    app.get('/api/bundles', optionalAuthMiddleware, (req, res) => {
+        try {
+            let definitions = getAllBundles();
+            if (!req.user || !req.user.isMaster) {
+                definitions = definitions.filter(d => d.isForSale !== false);
+            }
+            res.json({ success: true, bundles: definitions });
+        } catch (error) {
+            console.error('Error fetching bundle definitions:', error);
+            res.status(500).json({ success: false, message: '묶음 상품 목록을 불러오는 중 오류가 발생했습니다.' });
+        }
+    });
+
+    app.get('/api/themes', optionalAuthMiddleware, (req, res) => {
+        try {
+            let definitions = getAllThemes();
+            if (!req.user || !req.user.isMaster) {
+                definitions = definitions.filter(d => d.isForSale !== false);
+            }
+            res.json({ success: true, themes: definitions });
+        } catch (error) {
+            console.error('Error fetching theme definitions:', error);
+            res.status(500).json({ success: false, message: '테마 목록을 불러오는 중 오류가 발생했습니다.' });
+        }
+    });
+
     const authMiddleware = createAuthMiddleware(jwtSecret, false); // Not optional for buying
 
     app.post('/api/shop/buy', authMiddleware, async (req, res) => {

@@ -28,6 +28,7 @@ const messageRoutes = require('./src/messageRoutes');
 const achievementRoutes = require('./src/achievementRoutes');
 const cosmeticsRoutes = require('./src/cosmeticsRoutes');
 const calendarRoutes = require('./src/calendarRoutes');
+const titleRoutes = require('./src/titleRoutes');
 const socketHandlers = require('./src/socketHandlers');
 
 const app = express();
@@ -89,6 +90,7 @@ async function startServer() {
         accountRoutes(app, { userRepository, redisManager }, config.jwtSecret);
         gameRoutes(app);
         messageRoutes(app); // Register message routes
+        titleRoutes(app);
 
         // Register socket handlers
         socketHandlers(io, { pubClient, subClient }, { userRepository, socketRepository });
