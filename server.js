@@ -32,25 +32,19 @@ const socketHandlers = require('./src/socketHandlers');
 
 const app = express();
 const corsOptions = {
-    origin: (origin, callback) => {
-        const allowedOrigins = [
-            config.frontendUrl,
-            'http://localhost:5173',
-            'http://127.0.0.1:5173',
-            'https://uzulee.github.io', // Hardcode production frontend
-        ];
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: [
+        config.frontendUrl,
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'https://uzulee.github.io',
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Explicitly handle pre-flight requests
 app.use(cookieParser());
 app.use((req, res, next) => {
     console.log('Server.js: req.cookies =', req.cookies);
