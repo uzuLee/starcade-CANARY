@@ -5,4 +5,5 @@ module.exports = {
   duration: 2500,
   isProfileEffect: true,
   unlockMessage: '자유로운 바람처럼 움직여 잠금 해제하세요!',
-};
+  isForSale: false,
+  price: 0};

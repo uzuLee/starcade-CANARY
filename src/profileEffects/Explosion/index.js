@@ -5,5 +5,6 @@ module.exports = {
   duration: 1200, // 전체 애니메이션 지속 시간 (ms)
   rootClassName: 'explosion-shake',
   sparkCount: 100, // 파편(불꽃) 개수
-  smokeCount: 15, // 연기 입자 개수
-};
+  smokeCount: 15, // 연기 입자 개수,
+  isForSale: false,
+  price: 0};

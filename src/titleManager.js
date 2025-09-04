@@ -19,7 +19,7 @@ function loadTitles() {
             if (fs.existsSync(indexPath)) {
                 // Temporarily clear cache to ensure latest version is loaded
                 delete require.cache[require.resolve(indexPath)];
-                const achievementModule = require(indexPath).default;
+                const achievementModule = require(indexPath);
                 
                 if (achievementModule && achievementModule.rewards && Array.isArray(achievementModule.rewards)) {
                     achievementModule.rewards.forEach(reward => {

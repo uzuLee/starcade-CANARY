@@ -6,4 +6,5 @@ module.exports = {
   bodyClassName: 'Sun-active',
   rootClassName: 'screen-shake',
   rootBorderClassName: 'Sun-border-in-out',
-};
+  isForSale: false,
+  price: 0};

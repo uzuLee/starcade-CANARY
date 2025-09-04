@@ -5,4 +5,5 @@ module.exports = {
   duration: 5000,
   bodyClassName: 'defeat-active',
   fadeOutDuration: 1500,
-};
+  isForSale: false,
+  price: 0};

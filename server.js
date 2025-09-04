@@ -58,9 +58,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 const server = http.createServer(app);
-const io = new Server(server, {
-    cors: corsOptions
-});
+const io = new Server(server, { cors: corsOptions });
 
 async function startServer() {
     try {
@@ -79,11 +77,25 @@ async function startServer() {
         scoreRoutes(app, { userRepository, scoreRepository, redisManager }, config.jwtSecret);
         achievementRoutes(app);
         cosmeticsRoutes(app, redisManager, config.jwtSecret);
+        app.use('/api/calendar', calendarRoutes(config.jwtSecret));
         accountRoutes(app, { userRepository, redisManager }, config.jwtSecret);
         gameRoutes(app);
         messageRoutes(app); // Register message routes
 
         // Register socket handlers
+        socketHandlers(io, { pubClient, subClient }, { userRepository, socketRepository });
+
+        const PORT = config.port;
+        server.listen(PORT, () => {
+            console.log(`Backend server listening on port ${PORT}`);
+        });
+    } catch (err) {
+        console.error('Failed to start server:', err);
+        process.exit(1);
+    }
+}
+
+startServer();        // Register socket handlers
         socketHandlers(io, { pubClient, subClient }, { userRepository, socketRepository });
 
         const PORT = config.port;
