@@ -5,9 +5,19 @@ const { getAllCardDecorations } = require('./cardDecorationManager');
 const { getAllEffects } = require('./effectManager');
 const { getAllBundles } = require('./bundleManager');
 const { getAllThemes } = require('./themeManager');
+const userRepository = require('./repositories/userRepository');
 
 module.exports = (app, redisManager, jwtSecret) => {
     const optionalAuthMiddleware = createAuthMiddleware(jwtSecret, true);
+
+    const itemManagers = {
+        profileEffect: getAllEffects,
+        profileDecoration: getAllProfileDecorations,
+        cardEffect: getAllCardEffects,
+        cardDecoration: getAllCardDecorations,
+        bundle: getAllBundles,
+        theme: getAllThemes,
+    };
 
     app.get('/api/card-effects', optionalAuthMiddleware, (req, res) => {
         try {

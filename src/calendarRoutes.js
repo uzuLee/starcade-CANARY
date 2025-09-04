@@ -59,7 +59,7 @@ module.exports = (jwtSecret) => {
 
         try {
             // 1. Fetch Global Events
-            const globalEvents = await redisManager.client.hGetAll('starcade:events');
+            const globalEvents = await client.hGetAll('starcade:events');
             for (const eventId in globalEvents) {
                 const event = JSON.parse(globalEvents[eventId]);
                 const eventStartDate = new Date(event.date);
@@ -137,4 +137,5 @@ module.exports = (jwtSecret) => {
     });
 
     return router;
+};er;
 };
