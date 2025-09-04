@@ -57,7 +57,7 @@ app.get('/socket.io/', (req, res) => {
 });
 
 const server = http.createServer(app);
-const io = new Server(server, { cors: corsOptions });
+// const io = new Server(server, { path: '/socket.io/', cors: corsOptions });
 
 async function startServer() {
     try {
