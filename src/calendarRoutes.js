@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { redisManager } = require('./redisManager');
-const createAuthMiddleware = require('../middleware/auth');
+const createAuthMiddleware = require('./middleware/auth.js');
 const userRepository = require('../repositories/userRepository');
 
 module.exports = (jwtSecret) => {
