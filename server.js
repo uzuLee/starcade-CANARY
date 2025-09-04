@@ -61,7 +61,14 @@ app.use(express.json());
 const server = http.createServer(app);
 
 async function startServer() {
-    const io = new Server(server, { path: '/socket.io', cors: corsOptions }); // Moved io definition inside
+    const io = new Server(server, {
+        path: '/socket.io', // No trailing slash
+        cors: {
+            origin: ['https://uzulee.github.io'], // Specific origin
+            credentials: true,
+            methods: ['GET', 'POST']
+        }
+    }); // Moved io definition inside
     try {
         // Connect to Redis first
         await initRedis();
