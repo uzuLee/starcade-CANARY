@@ -38,6 +38,21 @@ module.exports = (jwtSecret) => {
         }
     });
 
+    router.delete('/events/:eventId', authMiddleware, masterOnly, async (req, res) => {
+        const { eventId } = req.params;
+        try {
+            const result = await client.hDel('starcade:events', eventId);
+            if (result > 0) {
+                res.json({ success: true, message: '이벤트가 성공적으로 삭제되었습니다.' });
+            } else {
+                res.status(404).json({ success: false, message: '해당 이벤트를 찾을 수 없습니다.' });
+            }
+        } catch (error) {
+            console.error('Error deleting calendar event:', error);
+            res.status(500).json({ success: false, message: '이벤트 삭제 중 오류가 발생했습니다.' });
+        }
+    });
+
     router.get('/', authMiddleware, async (req, res) => {
         const { year, month } = req.query;
         const userId = req.user.id;
