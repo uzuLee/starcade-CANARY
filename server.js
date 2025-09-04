@@ -27,6 +27,7 @@ const gameRoutes = require('./src/gameRoutes');
 const messageRoutes = require('./src/messageRoutes');
 const achievementRoutes = require('./src/achievementRoutes');
 const cosmeticsRoutes = require('./src/cosmeticsRoutes');
+const calendarRoutes = require('./src/calendarRoutes');
 const socketHandlers = require('./src/socketHandlers');
 
 const app = express();
@@ -37,7 +38,6 @@ const corsOptions = {
             'http://localhost:5173',
             'http://127.0.0.1:5173',
         ];
-        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
@@ -83,19 +83,6 @@ async function startServer() {
         messageRoutes(app); // Register message routes
 
         // Register socket handlers
-        socketHandlers(io, { pubClient, subClient }, { userRepository, socketRepository });
-
-        const PORT = config.port;
-        server.listen(PORT, () => {
-            console.log(`Backend server listening on port ${PORT}`);
-        });
-    } catch (err) {
-        console.error('Failed to start server:', err);
-        process.exit(1);
-    }
-}
-
-startServer();        // Register socket handlers
         socketHandlers(io, { pubClient, subClient }, { userRepository, socketRepository });
 
         const PORT = config.port;
