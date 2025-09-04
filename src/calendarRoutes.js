@@ -137,5 +137,4 @@ module.exports = (jwtSecret) => {
     });
 
     return router;
-};er;
 };
