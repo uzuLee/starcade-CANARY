@@ -19,6 +19,26 @@ module.exports = (app, { userRepository, scoreRepository, redisManager }, jwtSec
     app.post('/api/scores', async (req, res) => {
         const { gameId, score, userId, options, timestamp } = req.body;
 
+        // Anonymous users cannot have their scores updated, so we just add them.
+        if (userId === 'anonymous') {
+            const anonScore = { id: uuidv4(), gameId, score, userId, options: options || {}, timestamp: timestamp || new Date().toISOString() };
+            await scoreRepository.addScore(anonScore);
+            await redisManager.persistScore(gameId, anonScore.id);
+            return res.json({ success: true, score: anonScore });
+        }
+
+        const existingScores = await scoreRepository.getScores(gameId);
+        const userScoreIndex = existingScores.findIndex(s => s.userId === userId);
+
+        if (userScoreIndex > -1) {
+            const existingScore = existingScores[userScoreIndex];
+            if (score <= existingScore.score) {
+                return res.json({ success: true, message: '이미 더 높거나 같은 점수가 등록되어 있습니다.' });
+            }
+            // Remove the old score if the new one is higher
+            existingScores.splice(userScoreIndex, 1);
+        }
+
         const newScore = {
             id: uuidv4(),
             gameId,
@@ -27,9 +47,9 @@ module.exports = (app, { userRepository, scoreRepository, redisManager }, jwtSec
             options: options || {},
             timestamp: timestamp || new Date().toISOString(),
         };
-
-        await scoreRepository.addScore(newScore);
-        await redisManager.persistScore(gameId, newScore.id);
+        existingScores.push(newScore);
+        await scoreRepository.saveScoresForGame(gameId, existingScores);
+        await redisManager.persistGameScores(gameId);
 
         let unlockedAchievements = [];
         let newlyUnlockedEffects = [];
@@ -37,28 +57,25 @@ module.exports = (app, { userRepository, scoreRepository, redisManager }, jwtSec
         let currencyGained = 0;
         let finalUser = null;
 
-        if (userId !== 'anonymous') {
-            const currentUser = await userRepository.getUser(userId);
-            if (currentUser) {
-                const achievementResult = evaluateAchievements(currentUser, { gameId, ...options }, { score, ...options });
-                const userToSave = achievementResult.updatedUser;
+        const currentUser = await userRepository.getUser(userId);
+        if (currentUser) {
+            const achievementResult = evaluateAchievements(currentUser, { gameId, ...options }, { score, ...options });
+            const userToSave = achievementResult.updatedUser;
 
-                // Grant currency based on score
-                currencyGained = Math.floor(score / 100);
-                if (currencyGained > 0) {
-                    userToSave.money = (userToSave.money || 0) + currencyGained;
-                }
-
-                if (JSON.stringify(currentUser) !== JSON.stringify(userToSave)) {
-                    await userRepository.saveUser(userToSave);
-                    await redisManager.persistUser(userToSave.id);
-                }
-                
-                finalUser = userToSave;
-                unlockedAchievements = achievementResult.unlockedAchievements;
-                newlyUnlockedEffects = achievementResult.newlyUnlockedEffects;
-                newlyUnlockedTitles = achievementResult.newlyUnlockedTitles;
+            currencyGained = Math.floor(score / 100);
+            if (currencyGained > 0) {
+                userToSave.money = (userToSave.money || 0) + currencyGained;
             }
+
+            if (JSON.stringify(currentUser) !== JSON.stringify(userToSave)) {
+                await userRepository.saveUser(userToSave);
+                await redisManager.persistUser(userToSave.id);
+            }
+            
+            finalUser = userToSave;
+            unlockedAchievements = achievementResult.unlockedAchievements;
+            newlyUnlockedEffects = achievementResult.newlyUnlockedEffects;
+            newlyUnlockedTitles = achievementResult.newlyUnlockedTitles;
         }
 
         res.json({ success: true, score: newScore, unlockedAchievements, newlyUnlockedEffects, newlyUnlockedTitles, currencyGained, user: finalUser });
