@@ -363,4 +363,21 @@ module.exports = (app, io, { userRepository, socketRepository, redisManager }, j
         await redisManager.persistUser(targetUser.id);
         res.json({ success: true, message: `아이템 상태가 변경되었습니다.`, user: targetUser });
     });
+
+    app.get('/api/users/:id/transactions', authMiddleware, async (req, res) => {
+        const { id } = req.params;
+        const requestingUser = req.user;
+
+        if (requestingUser.id !== id && !requestingUser.isMaster) {
+            return res.status(403).json({ success: false, message: '권한이 없습니다.' });
+        }
+
+        try {
+            const transactions = await userRepository.getTransactions(id);
+            res.json({ success: true, transactions });
+        } catch (error) {
+            console.error(`Error fetching transactions for user ${id}:`, error);
+            res.status(500).json({ success: false, message: '거래 내역을 불러오는 중 오류가 발생했습니다.' });
+        }
+    });
 };

@@ -129,6 +129,11 @@ module.exports = (app, redisManager, jwtSecret) => {
 
             // TODO: Add more robust ownership checks
             user.money -= item.price;
+            await userRepository.addTransaction(userId, {
+                description: `${item.name} 구매`,
+                amount: -item.price,
+                type: 'spend'
+            });
 
             if (itemType === 'bundle') {
                 for (const subItem of item.items) {

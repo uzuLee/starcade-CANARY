@@ -55,6 +55,13 @@ module.exports = (app, { userRepository, scoreRepository, redisManager }, jwtSec
             currencyGained = Math.floor(score / 100);
             if (currencyGained > 0) {
                 userToSave.money = (userToSave.money || 0) + currencyGained;
+                const game = getGames().find(g => g.id === gameId);
+                const gameName = game ? game.name : gameId;
+                await userRepository.addTransaction(userId, {
+                    description: `${gameName} 플레이 보상`,
+                    amount: currencyGained,
+                    type: 'earn'
+                });
             }
 
             if (JSON.stringify(currentUser) !== JSON.stringify(userToSave)) {

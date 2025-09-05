@@ -250,6 +250,26 @@ async function setOnlineStatus(userId, onlineStatus) {
     await client.hSet(`${USER_KEY_PREFIX}${userId}`, 'onlineStatus', onlineStatus);
 }
 
+const TRANSACTION_KEY_PREFIX = 'transactions:';
+
+async function addTransaction(userId, transactionData) {
+    const transactionKey = `${TRANSACTION_KEY_PREFIX}${userId}`;
+    const transaction = {
+        id: Date.now().toString(),
+        timestamp: new Date().toISOString(),
+        ...transactionData,
+    };
+    await client.lPush(transactionKey, JSON.stringify(transaction));
+    await client.lTrim(transactionKey, 0, 99);
+    return transaction;
+}
+
+async function getTransactions(userId) {
+    const transactionKey = `${TRANSACTION_KEY_PREFIX}${userId}`;
+    const transactionsJson = await client.lRange(transactionKey, 0, -1);
+    return transactionsJson.map(t => JSON.parse(t));
+}
+
 module.exports = {
     getUser,
     getAllUsers,
@@ -262,5 +282,7 @@ module.exports = {
     setOnlineStatus,
     userToRedisHash,
     redisHashToUser,
+    addTransaction,
+    getTransactions,
     FRIENDS_KEY_PREFIX,
 };
