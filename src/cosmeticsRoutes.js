@@ -133,17 +133,26 @@ module.exports = (app, redisManager, jwtSecret) => {
             if (itemType === 'bundle') {
                 for (const subItem of item.items) {
                     const unlockedListKey = `unlocked${subItem.type.charAt(0).toUpperCase() + subItem.type.slice(1)}s`;
-                    if (user[unlockedListKey] && !user[unlockedListKey].includes(subItem.id)) {
+                    if (!user[unlockedListKey]) {
+                        user[unlockedListKey] = [];
+                    }
+                    if (!user[unlockedListKey].includes(subItem.id)) {
                         user[unlockedListKey].push(subItem.id);
                     }
                 }
             } else if (itemType === 'theme') {
+                if (!user.unlockedThemes) {
+                    user.unlockedThemes = [];
+                }
                 if (!user.unlockedThemes.includes(item.id)) {
                     user.unlockedThemes.push(item.id);
                 }
             } else { // It's a regular cosmetic
                 const unlockedListKey = `unlocked${itemType.charAt(0).toUpperCase() + itemType.slice(1)}s`;
-                 if (user[unlockedListKey] && !user[unlockedListKey].includes(item.id)) {
+                if (!user[unlockedListKey]) {
+                    user[unlockedListKey] = [];
+                }
+                 if (!user[unlockedListKey].includes(item.id)) {
                     user[unlockedListKey].push(item.id);
                 }
             }

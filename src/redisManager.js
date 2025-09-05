@@ -43,8 +43,12 @@ const redisManager = {
      * @param {string} userId - The ID of the user to persist.
      */
     async persistUser(userId) {
+        console.log(`Attempting to persist user ${userId} to db.json`);
         const user = await userRepository.getUser(userId);
-        if (!user) return;
+        if (!user) {
+            console.warn(`User ${userId} not found in Redis, cannot persist.`);
+            return;
+        }
 
         const dbData = readDb();
         const userIndex = dbData.users.findIndex(u => u.id === userId);
@@ -53,7 +57,12 @@ const redisManager = {
         } else {
             dbData.users.push(user);
         }
-        writeDb(dbData);
+        try {
+            writeDb(dbData);
+            console.log(`Successfully persisted user ${userId} to db.json`);
+        } catch (error) {
+            console.error(`Error writing user ${userId} to db.json:`, error);
+        }
     },
 
     /**

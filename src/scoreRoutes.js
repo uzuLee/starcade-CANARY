@@ -64,6 +64,29 @@ module.exports = (app, { userRepository, scoreRepository, redisManager }, jwtSec
         res.json({ success: true, score: newScore, unlockedAchievements, newlyUnlockedEffects, newlyUnlockedTitles, currencyGained, user: finalUser });
     });
 
+    app.get('/api/rankings/money', async (req, res) => {
+        try {
+            const allUsers = await userRepository.getAllUsers();
+            const moneyRanking = allUsers
+                .filter(u => u.money !== undefined && u.money > 0)
+                .sort((a, b) => b.money - a.money)
+                .slice(0, 100) // Return top 100
+                .map(u => ({
+                    userId: u.id,
+                    userName: u.name,
+                    userAvatar: u.avatar,
+                    score: u.money, // Use 'score' field for consistency on the frontend
+                    userBirthday: u.birthday,
+                    cardEffect: u.cardEffect,
+                    cardDecoration: u.cardDecoration,
+                }));
+            res.json({ success: true, scores: moneyRanking });
+        } catch (error) {
+            console.error('Error fetching money ranking:', error);
+            res.status(500).json({ success: false, message: '소지금 랭킹을 불러오는 중 오류가 발생했습니다.' });
+        }
+    });
+
     app.get('/api/scores/:gameId', async (req, res) => {
         const { gameId } = req.params;
         try {

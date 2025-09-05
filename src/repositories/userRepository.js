@@ -58,6 +58,8 @@ const redisHashToUser = async (hash) => {
             } catch (e) {
                 user[key] = value;
             }
+        } else if (key === 'money') {
+            user[key] = Number(value); // money 필드는 숫자로 변환
         } else {
             user[key] = value;
         }

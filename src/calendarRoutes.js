@@ -14,7 +14,7 @@ module.exports = (jwtSecret) => {
         next();
     };
 
-    router.post('/events', authMiddleware, masterOnly, async (req, res) => {
+    router.post('/calendar/events', authMiddleware, masterOnly, async (req, res) => {
         const { name, description, date, recurring, icon } = req.body;
         if (!name || !date) {
             return res.status(400).json({ success: false, message: '이름과 날짜는 필수입니다.' });
@@ -38,7 +38,7 @@ module.exports = (jwtSecret) => {
         }
     });
 
-    router.delete('/events/:eventId', authMiddleware, masterOnly, async (req, res) => {
+    router.delete('/calendar/events/:eventId', authMiddleware, masterOnly, async (req, res) => {
         const { eventId } = req.params;
         try {
             const result = await client.hDel('starcade:events', eventId);
@@ -69,7 +69,9 @@ module.exports = (jwtSecret) => {
         const addEvent = (date, event) => {
             const dateStr = date.toISOString().split('T')[0];
             if (!eventsByDate[dateStr]) eventsByDate[dateStr] = [];
-            eventsByDate[dateStr].push(event);
+            // Ensure every event has a unique ID, especially for dynamically generated ones
+            const uniqueId = event.id || `dynamic-${dateStr}-${event.name}-${Math.random().toString(36).substring(2)}`;
+            eventsByDate[dateStr].push({ ...event, id: uniqueId });
         };
 
         try {
