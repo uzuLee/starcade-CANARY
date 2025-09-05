@@ -28,16 +28,6 @@ module.exports = (app, { userRepository, scoreRepository, redisManager }, jwtSec
         }
 
         const existingScores = await scoreRepository.getScores(gameId);
-        const userScoreIndex = existingScores.findIndex(s => s.userId === userId);
-
-        if (userScoreIndex > -1) {
-            const existingScore = existingScores[userScoreIndex];
-            if (score <= existingScore.score) {
-                return res.json({ success: true, message: '이미 더 높거나 같은 점수가 등록되어 있습니다.' });
-            }
-            // Remove the old score if the new one is higher
-            existingScores.splice(userScoreIndex, 1);
-        }
 
         const newScore = {
             id: uuidv4(),
@@ -107,7 +97,19 @@ module.exports = (app, { userRepository, scoreRepository, redisManager }, jwtSec
     app.get('/api/scores/:gameId', async (req, res) => {
         const { gameId } = req.params;
         try {
-            let scores = await scoreRepository.getScores(gameId);
+            const allScores = await scoreRepository.getScores(gameId);
+            const highestScores = {};
+            for (const score of allScores) {
+                if (score.userId === 'anonymous') {
+                    highestScores[`anonymous-${score.id}`] = score;
+                    continue;
+                }
+                if (!highestScores[score.userId] || score.score > highestScores[score.userId].score) {
+                    highestScores[score.userId] = score;
+                }
+            }
+            let scores = Object.values(highestScores);
+
             // Sort by score descending
             scores.sort((a, b) => b.score - a.score);
 
@@ -147,14 +149,24 @@ module.exports = (app, { userRepository, scoreRepository, redisManager }, jwtSec
             return res.status(403).json({ success: false, message: '권한이 없습니다.' });
         }
         const { scoreId } = req.params;
+        const { deleteAll } = req.body;
         const allGames = getGames();
         let scoreDeleted = false;
         for (const game of allGames) {
             const scores = await scoreRepository.getScores(game.id);
             const scoreIndex = scores.findIndex(s => s.id === scoreId);
             if (scoreIndex > -1) {
-                scores.splice(scoreIndex, 1);
-                await scoreRepository.saveScoresForGame(game.id, scores);
+                const scoreToDelete = scores[scoreIndex];
+                const userIdToDelete = scoreToDelete.userId;
+                let newScores;
+
+                if (deleteAll) {
+                    newScores = scores.filter(s => s.userId !== userIdToDelete);
+                } else {
+                    newScores = scores.filter(s => s.id !== scoreId);
+                }
+
+                await scoreRepository.saveScoresForGame(game.id, newScores);
                 await redisManager.persistGameScores(game.id);
                 scoreDeleted = true;
                 break;

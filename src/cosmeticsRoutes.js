@@ -157,7 +157,7 @@ module.exports = (app, redisManager, jwtSecret) => {
                 }
             }
 
-            await userRepository.updateUser(userId, user);
+            await userRepository.saveUser(user);
 
             res.json({ success: true, message: '구매에 성공했습니다!', user });
 
