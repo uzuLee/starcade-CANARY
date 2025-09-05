@@ -88,7 +88,7 @@ module.exports = (app, redisManager, jwtSecret) => {
         try {
             let definitions = getAllThemes();
             if (!req.user || !req.user.isMaster) {
-                definitions = definitions.filter(d => d.isForSale !== false);
+                definitions = definitions.filter(d => d.isForSale);
             }
             res.json({ success: true, themes: definitions });
         } catch (error) {

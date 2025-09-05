@@ -71,6 +71,7 @@ const redisHashToUser = async (hash) => {
     user.unlockedCardEffects = user.unlockedCardEffects || [];
     user.unlockedProfileDecorations = user.unlockedProfileDecorations || [];
     user.unlockedCardDecorations = user.unlockedCardDecorations || [];
+    user.unlockedThemes = user.unlockedThemes || [];
     user.friendRequests = user.friendRequests || [];
     user.pendingRequests = user.pendingRequests || [];
     user.displayedAchievements = user.displayedAchievements || [];

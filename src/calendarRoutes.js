@@ -14,7 +14,7 @@ module.exports = (jwtSecret) => {
         next();
     };
 
-    router.post('/calendar/events', authMiddleware, masterOnly, async (req, res) => {
+    router.post('/events', authMiddleware, masterOnly, async (req, res) => {
         const { name, description, date, recurring, icon } = req.body;
         if (!name || !date) {
             return res.status(400).json({ success: false, message: '이름과 날짜는 필수입니다.' });
@@ -38,7 +38,7 @@ module.exports = (jwtSecret) => {
         }
     });
 
-    router.delete('/calendar/events/:eventId', authMiddleware, masterOnly, async (req, res) => {
+    router.delete('/events/:eventId', authMiddleware, masterOnly, async (req, res) => {
         const { eventId } = req.params;
         try {
             const result = await client.hDel('starcade:events', eventId);

@@ -86,7 +86,7 @@ async function startServer() {
         scoreRoutes(app, { userRepository, scoreRepository, redisManager }, config.jwtSecret);
         achievementRoutes(app);
         cosmeticsRoutes(app, redisManager, config.jwtSecret);
-        app.use('/api', calendarRoutes(config.jwtSecret));
+        app.use('/api/calendar', calendarRoutes(config.jwtSecret));
         accountRoutes(app, { userRepository, redisManager }, config.jwtSecret);
         gameRoutes(app);
         messageRoutes(app); // Register message routes
