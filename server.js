@@ -35,12 +35,11 @@ const app = express();
 const corsOptions = {
     origin: (origin, callback) => {
         const allowedOrigins = [
-            config.frontendUrl,
+            'https://uzulee.github.io', // Main and subpaths like /starcade and /starcade-CANARY
             'http://localhost:5173',
             'http://127.0.0.1:5173',
-            'https://uzulee.github.io', // Hardcode production frontend
         ];
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
@@ -65,15 +64,26 @@ async function startServer() {
     const io = new Server(server, {
         path: '/socket.io', // No trailing slash
         cors: {
-            origin: ['https://uzulee.github.io'], // Specific origin
+            origin: (origin, callback) => {
+                const allowedOrigins = [
+                    'https://uzulee.github.io', // Main and subpaths like /starcade and /starcade-CANARY
+                    'http://localhost:5173',
+                    'http://127.0.0.1:5173',
+                ];
+                if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
+                    callback(null, true);
+                } else {
+                    callback(new Error('Not allowed by CORS for socket'));
+                }
+            },
             credentials: true,
             methods: ['GET', 'POST']
         }
-    }); // Moved io definition inside
+    });
     try {
         // Connect to Redis first
         await initRedis();
-        console.log('Redis connected successfully.');
+        console.log(`Redis DB #${config.redisDb} connected successfully.`);
         console.log('JWT Secret:', config.jwtSecret);
 
         // Load initial data from db.json into Redis

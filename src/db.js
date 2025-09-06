@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+const config = require('./config');
 
-const DB_FILE = path.join(__dirname, '..', 'db.json'); // Adjust path to db.json
+const DB_FILE = path.join(__dirname, '..', config.dbFile);
 
 // Helper to read/write mock DB
 const readDb = () => {

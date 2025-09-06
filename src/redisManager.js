@@ -5,15 +5,22 @@ const { client } = require('./redisClient');
 const { readDb, writeDb } = require('./db');
 const userRepository = require('./repositories/userRepository');
 const scoreRepository = require('./repositories/scoreRepository');
+const config = require('./config');
 
 const redisManager = {
     /**
-     * Loads all data from db.json into the Redis cache on server startup.
-     * This overwrites any existing data in Redis.
+     * Loads all data from db.json into the Redis cache on server startup,
+     * only if the Redis database is empty.
      */
     async loadInitialDataFromDb() {
+        const keyCount = await client.dbSize();
+        if (keyCount > 0) {
+            console.log(`Redis DB #${config.redisDb} is not empty, skipping initial data load from ${config.dbFile}.`);
+            return;
+        }
+
+        console.log(`Redis DB #${config.redisDb} is empty, loading initial data from ${config.dbFile}...`);
         const dbData = readDb();
-        await client.flushDb();
 
         for (const user of dbData.users) {
             if (!user || typeof user.id === 'undefined' || typeof user.name === 'undefined') {
@@ -43,7 +50,7 @@ const redisManager = {
      * @param {string} userId - The ID of the user to persist.
      */
     async persistUser(userId) {
-        console.log(`Attempting to persist user ${userId} to db.json`);
+        console.log(`Attempting to persist user ${userId} to ${config.dbFile}`);
         const user = await userRepository.getUser(userId);
         if (!user) {
             console.warn(`User ${userId} not found in Redis, cannot persist.`);
@@ -59,9 +66,9 @@ const redisManager = {
         }
         try {
             writeDb(dbData);
-            console.log(`Successfully persisted user ${userId} to db.json`);
+            console.log(`Successfully persisted user ${userId} to ${config.dbFile}`);
         } catch (error) {
-            console.error(`Error writing user ${userId} to db.json:`, error);
+            console.error(`Error writing user ${userId} to ${config.dbFile}:`, error);
         }
     },
 
