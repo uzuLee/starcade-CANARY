@@ -7,8 +7,8 @@
     "start": "cross-env APP_ENV=production PORT=8080 node server.js",
     "start:main": "cross-env APP_ENV=production PORT=8080 node server.js",
     "start:canary": "cross-env APP_ENV=canary PORT=8088 node server.js",
-    "deploy:main": "git add . && git commit -m \"배포\" && git push origin HEAD:master",
-    "deploy:canary": "git add . && git commit -m \"배포\" && git push origin HEAD:canary"
+    "deploy:main": "git add . && (git commit -m \"배포\" || true) && git push origin HEAD:master",
+    "deploy:canary": "git add . && (git commit -m \"배포\" || true) && git push origin HEAD:canary"
   },
   "keywords": [],
   "author": "Gemini",
