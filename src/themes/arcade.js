@@ -9,7 +9,7 @@ module.exports = {
     '--cabinet-color': '#f9dada',
     '--cabinet-shadow-color': '#333',
     '--cabinet-border-color': '#ccc',
-    '--glow-color': '#ff00ff',
+    '--glow-color': '#ff69b4',
   },
   isReleased: true,
 };
