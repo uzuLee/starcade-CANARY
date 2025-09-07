@@ -7,4 +7,6 @@ module.exports = {
   isUnlockable: false,
   unlockMessage: '생일에 접속하여 잠금 해제하세요!',
   isForSale: false,
-  price: 0};
+  price: 0,
+  isReleased: true,
+};

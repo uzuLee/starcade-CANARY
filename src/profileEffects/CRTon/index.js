@@ -5,4 +5,6 @@ module.exports = {
   duration: 1500,
   isProfileEffect: false, // This is a transition effect, not for profile decoration,
   isForSale: false,
-  price: 0};
+  price: 0,
+  isReleased: true,
+};

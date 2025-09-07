@@ -3,7 +3,11 @@ const { getGames } = require('./gameManager');
 module.exports = (app) => {
     app.get('/api/games', (req, res) => {
         try {
-            const games = getGames();
+            let games = getGames();
+            // If the request is not from canary, filter for released games only
+            if (!req.isCanary) {
+                games = games.filter(g => g.isReleased);
+            }
             res.json({ success: true, games });
         } catch (error) {
             console.error('Error fetching games:', error);

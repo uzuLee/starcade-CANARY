@@ -10,5 +10,6 @@ module.exports = {
     '--cabinet-shadow-color': '#333',
     '--cabinet-border-color': '#ccc',
     '--glow-color': '#ff00ff',
-  }
+  },
+  isReleased: true,
 };

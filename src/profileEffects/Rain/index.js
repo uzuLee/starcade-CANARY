@@ -6,4 +6,6 @@ module.exports = {
   isProfileEffect: true,
   unlockMessage: '고요한 순간을 경험하여 잠금 해제하세요!',
   isForSale: false,
-  price: 0};
+  price: 0,
+  isReleased: true,
+};

@@ -5,4 +5,5 @@ module.exports = {
   topic: 'g2048',
   description: '타일 합치기',
   category: 'single-player',
+  isReleased: true,
 };

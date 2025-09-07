@@ -5,4 +5,5 @@ module.exports = {
   topic: 'memory',
   description: '직관과 기억력의 조화',
   category: 'single-player',
+  isReleased: true,
 };

@@ -7,4 +7,6 @@ module.exports = {
   rootClassName: 'screen-shake',
   rootBorderClassName: 'Sun-border-in-out',
   isForSale: false,
-  price: 0};
+  price: 0,
+  isReleased: true,
+};

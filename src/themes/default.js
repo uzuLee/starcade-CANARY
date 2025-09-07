@@ -7,5 +7,6 @@ module.exports = {
   shell: 'GeneralShell',
   colors: {
     // GeneralShell uses CSS variables defined in the frontend
-  }
+  },
+  isReleased: true,
 };

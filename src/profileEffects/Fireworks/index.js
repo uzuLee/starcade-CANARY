@@ -6,4 +6,6 @@ module.exports = {
   isProfileEffect: true,
   unlockMessage: '화려한 업적을 달성하여 잠금 해제하세요!',
   isForSale: false,
-  price: 0};
+  price: 0,
+  isReleased: true,
+};

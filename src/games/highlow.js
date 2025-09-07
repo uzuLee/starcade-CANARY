@@ -5,4 +5,5 @@ module.exports = {
   topic: 'highlow',
   description: '높을까 낮을까',
   category: 'single-player',
+  isReleased: true,
 };

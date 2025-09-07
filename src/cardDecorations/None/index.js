@@ -3,4 +3,6 @@ module.exports = {
   name: '없음',
   isUnlockable: true, // Default, always available,
   isForSale: false,
-  price: 0};
+  price: 0,
+  isReleased: true,
+};

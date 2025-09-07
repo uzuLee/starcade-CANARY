@@ -4,4 +4,6 @@ module.exports = {
   // This decoration is not unlockable by normal means
   isUnlockable: false,
   isForSale: false,
-  price: 0};
+  price: 0,
+  isReleased: true,
+};

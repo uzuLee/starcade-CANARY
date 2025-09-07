@@ -4,4 +4,6 @@ module.exports = {
   description: '알림 메시지를 표시합니다.',
   duration: 3000, // 기본 지속 시간 3초,
   isForSale: false,
-  price: 0};
+  price: 0,
+  isReleased: true,
+};

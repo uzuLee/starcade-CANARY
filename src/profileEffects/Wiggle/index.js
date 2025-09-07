@@ -5,4 +5,6 @@ module.exports = {
   duration: 1000, // 1초 지속
   rootClassName: 'wiggle-active',
   isForSale: false,
-  price: 0};
+  price: 0,
+  isReleased: true,
+};

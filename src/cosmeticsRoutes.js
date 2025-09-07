@@ -87,8 +87,11 @@ module.exports = (app, redisManager, jwtSecret) => {
     app.get('/api/themes', optionalAuthMiddleware, (req, res) => {
         try {
             let definitions = getAllThemes();
-            if (!req.user || !req.user.isMaster) {
-                definitions = definitions.filter(d => d.isForSale);
+            if (req.user && !req.user.isMaster) {
+                const unlockedThemes = req.user.unlockedThemes || [];
+                definitions = definitions.filter(d => d.isForSale || unlockedThemes.includes(d.id) || d.id === 'default');
+            } else if (!req.user) {
+                definitions = definitions.filter(d => d.isForSale || d.id === 'default');
             }
             res.json({ success: true, themes: definitions });
         } catch (error) {
@@ -96,6 +99,53 @@ module.exports = (app, redisManager, jwtSecret) => {
             res.status(500).json({ success: false, message: '테마 목록을 불러오는 중 오류가 발생했습니다.' });
         }
     });
+
+    const createAuthMiddleware = require('./middleware/auth.js');
+const { getAllCardEffects } = require('./cardEffectManager');
+const { getAllProfileDecorations } = require('./profileDecorationManager');
+const { getAllCardDecorations } = require('./cardDecorationManager');
+const { getAllEffects } = require('./effectManager');
+const { getAllBundles } = require('./bundleManager');
+const { getAllThemes } = require('./themeManager');
+const userRepository = require('./repositories/userRepository');
+
+module.exports = (app, redisManager, jwtSecret) => {
+    const optionalAuthMiddleware = createAuthMiddleware(jwtSecret, true);
+
+    const itemManagers = {
+        profileEffect: getAllEffects,
+        profileDecoration: getAllProfileDecorations,
+        cardEffect: getAllCardEffects,
+        cardDecoration: getAllCardDecorations,
+        bundle: getAllBundles,
+        theme: getAllThemes,
+    };
+
+    const createRoute = (path, manager) => {
+        app.get(path, optionalAuthMiddleware, (req, res) => {
+            try {
+                let definitions = manager();
+                if (!req.isCanary) {
+                    definitions = definitions.filter(d => d.isReleased);
+                }
+                if (!req.user || !req.user.isMaster) {
+                    definitions = definitions.filter(d => d.isUnlockable !== false);
+                }
+                const key = path.split('/').pop().replace('-', '_');
+                res.json({ success: true, [key]: definitions });
+            } catch (error) {
+                console.error(`Error fetching ${path}:`, error);
+                res.status(500).json({ success: false, message: '데이터를 불러오는 중 오류가 발생했습니다.' });
+            }
+        });
+    };
+
+    createRoute('/api/card-effects', getAllCardEffects);
+    createRoute('/api/profile-decorations', getAllProfileDecorations);
+    createRoute('/api/card-decorations', getAllCardDecorations);
+    createRoute('/api/profile-effects', getAllEffects);
+    createRoute('/api/bundles', getAllBundles);
+    createRoute('/api/themes', getAllThemes);
 
     const authMiddleware = createAuthMiddleware(jwtSecret, false); // Not optional for buying
 

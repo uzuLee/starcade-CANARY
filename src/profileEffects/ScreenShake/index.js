@@ -5,4 +5,6 @@ module.exports = {
   duration: 500, // 0.5초 지속
   rootClassName: 'screen-shake',
   isForSale: false,
-  price: 0};
+  price: 0,
+  isReleased: true,
+};

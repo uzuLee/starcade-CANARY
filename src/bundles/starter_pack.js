@@ -9,4 +9,5 @@ module.exports = {
   // price: 3500, // 이 가격을 설정하면 아래 할인이 무시됩니다.
   discount: 15, // 포함된 아이템 가격 총합에서 15% 할인이 적용됩니다.
   isForSale: false,
+  isReleased: true,
 };

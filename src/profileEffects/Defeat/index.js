@@ -6,4 +6,6 @@ module.exports = {
   bodyClassName: 'defeat-active',
   fadeOutDuration: 1500,
   isForSale: false,
-  price: 0};
+  price: 0,
+  isReleased: true,
+};

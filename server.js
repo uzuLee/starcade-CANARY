@@ -58,6 +58,13 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 
+// Middleware to detect canary environment from request origin
+app.use((req, res, next) => {
+    const origin = req.get('origin');
+    req.isCanary = origin && origin.includes('starcade-CANARY');
+    next();
+});
+
 const server = http.createServer(app);
 
 async function startServer() {

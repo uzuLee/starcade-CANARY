@@ -5,4 +5,5 @@ module.exports = {
   topic: 'slot',
   description: '가벼운 운빨',
   category: 'single-player',
+  isReleased: true,
 };

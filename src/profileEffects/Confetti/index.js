@@ -6,6 +6,7 @@ module.exports = {
   isProfileEffect: true,
   particleCount: 100, // 기본 입자 개수
   unlockMessage: '축하할 일이 있을 때 잠금 해제됩니다.',
+  isForSale: true,
   price: 3000,
-  isForSale: false,
-  price: 0};
+  isReleased: true,
+};

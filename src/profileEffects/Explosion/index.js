@@ -7,4 +7,6 @@ module.exports = {
   sparkCount: 100, // 파편(불꽃) 개수
   smokeCount: 15, // 연기 입자 개수,
   isForSale: false,
-  price: 0};
+  price: 0,
+  isReleased: true,
+};

@@ -185,4 +185,36 @@ module.exports = (app, { userRepository, scoreRepository, redisManager }, jwtSec
             res.status(404).json({ success: false, message: '해당 랭킹을 찾을 수 없습니다.' });
         }
     });
+
+    app.post('/api/game-over', authMiddleware, async (req, res) => {
+        const { gameId, score, userId } = req.body;
+        if (!userId || userId === 'anonymous') {
+            return res.json({ success: true, message: 'Anonymous user cannot earn currency.' });
+        }
+
+        try {
+            const currentUser = await userRepository.getUser(userId);
+            if (currentUser) {
+                const currencyGained = Math.floor(score / 100);
+                if (currencyGained > 0) {
+                    currentUser.money = (currentUser.money || 0) + currencyGained;
+                    const game = getGames().find(g => g.id === gameId);
+                    const gameName = game ? game.name : gameId;
+                    await userRepository.addTransaction(userId, {
+                        description: `${gameName} 플레이 보상 (랭킹 미기록)`,
+                        amount: currencyGained,
+                        type: 'earn'
+                    });
+                    await userRepository.saveUser(currentUser);
+                    await redisManager.persistUser(currentUser.id);
+                }
+                res.json({ success: true, user: currentUser, currencyGained });
+            } else {
+                res.status(404).json({ success: false, message: 'User not found' });
+            }
+        } catch (error) {
+            console.error('Error processing game-over:', error);
+            res.status(500).json({ success: false, message: 'Error processing game over.' });
+        }
+    });
 };

@@ -4,7 +4,9 @@
   "description": "Backend for Starcade game portal",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "cross-env APP_ENV=production PORT=8080 node server.js",
+    "start:prod": "cross-env APP_ENV=production PORT=8080 node server.js",
+    "start:canary": "cross-env APP_ENV=canary PORT=8088 node server.js"
   },
   "keywords": [],
   "author": "Gemini",
@@ -19,5 +21,8 @@
     "nodemailer": "^6.10.1",
     "redis": "^4.6.13",
     "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "cross-env": "^10.0.0"
   }
 }
