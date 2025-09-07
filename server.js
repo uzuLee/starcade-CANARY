@@ -34,16 +34,7 @@ const socketHandlers = require('./src/socketHandlers');
 const app = express();
 const corsOptions = {
     origin: (origin, callback) => {
-        const allowedOrigins = [
-            'https://uzulee.github.io', // Main and subpaths like /starcade and /starcade-CANARY
-            'http://localhost:5173',
-            'http://127.0.0.1:5173',
-        ];
-        if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
+        callback(null, true); // 모든 origin 허용
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -71,17 +62,8 @@ async function startServer() {
     const io = new Server(server, {
         path: '/socket.io', // No trailing slash
         cors: {
-            origin: (origin, callback) => {
-                const allowedOrigins = [
-                    'https://uzulee.github.io', // Main and subpaths like /starcade and /starcade-CANARY
-                    'http://localhost:5173',
-                    'http://127.0.0.1:5173',
-                ];
-                if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
-                    callback(null, true);
-                } else {
-                    callback(new Error('Not allowed by CORS for socket'));
-                }
+                        origin: (origin, callback) => {
+                callback(null, true);
             },
             credentials: true,
             methods: ['GET', 'POST']
