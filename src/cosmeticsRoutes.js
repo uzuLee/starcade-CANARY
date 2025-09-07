@@ -29,7 +29,7 @@ module.exports = (app, redisManager, jwtSecret) => {
                 if (!req.user || !req.user.isMaster) {
                     definitions = definitions.filter(d => d.isUnlockable !== false);
                 }
-                const key = path.split('/').pop().replace('-', '_');
+                const key = path.split('/').pop().replace(/-(\w)/g, (match, letter) => letter.toUpperCase());
                 res.json({ success: true, [key]: definitions });
             } catch (error) {
                 console.error(`Error fetching ${path}:`, error);
