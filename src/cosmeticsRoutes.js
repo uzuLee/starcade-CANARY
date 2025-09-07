@@ -79,7 +79,7 @@ module.exports = (app, redisManager, jwtSecret) => {
             user.money -= item.price;
             await userRepository.addTransaction(userId, {
                 description: `${item.name} 구매`,
-                amount: -item.price,
+                amount: item.price,
                 type: 'spend'
             });
 
