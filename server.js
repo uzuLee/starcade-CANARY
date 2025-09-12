@@ -33,18 +33,11 @@ const socketHandlers = require('./src/socketHandlers');
 
 const app = express();
 const corsOptions = {
-    origin: (origin, callback) => {
-        const allowedOrigins = [
-            'https://uzulee.github.io', // Main and subpaths like /starcade and /starcade-CANARY
-            'http://localhost:5173',
-            'http://127.0.0.1:5173',
-        ];
-        if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: [
+        'https://uzulee.github.io',
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
