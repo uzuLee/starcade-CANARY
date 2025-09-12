@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const cors = require('cors');
 
 const cookieParser = require('cookie-parser');
 const { createAdapter } = require('@socket.io/redis-adapter');
@@ -32,25 +33,12 @@ const titleRoutes = require('./src/titleRoutes');
 const socketHandlers = require('./src/socketHandlers');
 
 const app = express();
-app.use((req, res, next) => {
-    const allowedOrigins = [
-        'https://uzulee.github.io',
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-    ];
-    const origin = req.headers.origin;
-    if (allowedOrigins.some(o => origin && origin.startsWith(o))) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(204);
-    }
-    next();
-});
+const corsOptions = {
+    origin: 'https://uzulee.github.io',
+    credentials: true,
+};
+app.options('*', cors(corsOptions)); // Handle pre-flight requests
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use((req, res, next) => {
     console.log('Server.js: req.cookies =', req.cookies);
@@ -58,10 +46,10 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 
-// Middleware to detect canary environment from request origin
+// Middleware to detect canary environment from request host
 app.use((req, res, next) => {
-    const origin = req.get('origin');
-    req.isCanary = origin && origin.includes('starcade-CANARY');
+    const host = req.get('host');
+    req.isCanary = host && host.includes('canary');
     next();
 });
 
