@@ -100,7 +100,7 @@ async function startServer() {
         // Register socket handlers
         socketHandlers(io, { pubClient, subClient }, { userRepository, socketRepository });
 
-        const PORT = config.port;
+        const PORT = config.isCanary ? 8088 : (process.env.PORT || 8080);
         server.listen(PORT, () => {
             console.log(`Backend server listening on port ${PORT}`);
         });

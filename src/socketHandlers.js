@@ -1,7 +1,14 @@
 const { createAdapter } = require('@socket.io/redis-adapter');
 const { client } = require('./redisClient');
+const gameRoomManager = require('./gameRoomManager');
+const arena2048Logic = require('./games/logic/arena2048');
 
 const disconnectTimers = new Map();
+
+// Map game IDs to their corresponding logic modules
+const gameLogics = {
+  arena2048: arena2048Logic,
+};
 
 module.exports = (io, { pubClient, subClient }, { userRepository, socketRepository }) => {
 
@@ -38,16 +45,13 @@ module.exports = (io, { pubClient, subClient }, { userRepository, socketReposito
             socket.join(userId);
             await socketRepository.addSocketIdForUser(userId, socket.id);
             
-            // Persist the connected status to the user's hash first
             await userRepository.setConnectionStatus(userId, 'connected');
             
-            // Now, fetch the fully updated user object which includes the new status
             const user = await userRepository.getUser(userId);
             if (user) {
                 const displayStatus = await socketRepository.getDisplayStatus(userId, user.onlineStatus);
                 console.log(`[Socket] User ${userId} display status is now: ${displayStatus}`);
                 
-                // The user object now correctly has connectionStatus: 'connected' from the repository
                 io.to(userId).emit('statusUpdated', { 
                     status: displayStatus, 
                     connectionStatus: user.connectionStatus,
@@ -57,10 +61,118 @@ module.exports = (io, { pubClient, subClient }, { userRepository, socketReposito
             }
         });
 
+        // Multiplayer Game Room Logic
+        socket.on('getRooms', () => {
+            socket.emit('roomsList', gameRoomManager.getAllRooms());
+        });
+
+        socket.on('createRoom', async ({ gameId, options }) => {
+            const user = await userRepository.getUser(socket.userId);
+            if (!user) return;
+
+            const gameLogic = gameLogics[gameId];
+            if (!gameLogic) return;
+
+            const room = gameRoomManager.createRoom(gameId, options, user);
+            // Initialize game state with the host player
+            room.gameState = gameLogic.initialize(user, options);
+            
+            socket.join(room.id);
+            io.emit('roomsList', gameRoomManager.getAllRooms()); // Notify everyone of the new room
+            socket.emit('roomJoined', room); // Send room details to creator
+        });
+
+        socket.on('joinRoom', async (roomId) => {
+            const user = await userRepository.getUser(socket.userId);
+            if (!user) return;
+
+            const { room, error } = gameRoomManager.joinRoom(roomId, user);
+            if (error) {
+                socket.emit('roomError', { message: error });
+                return;
+            }
+
+            const gameLogic = gameLogics[room.gameId];
+            if (gameLogic && !room.gameState.players[user.id]) {
+                room.gameState = gameLogic.addPlayer(room.gameState, user);
+            }
+
+            socket.join(roomId);
+            // Send the latest state to the new player
+            socket.emit('roomJoined', room);
+            // Notify existing players of the new arrival
+            socket.to(roomId).emit('playerJoined', user);
+            // Broadcast the updated game state to all
+            io.to(roomId).emit('gameUpdate', room.gameState);
+            
+            io.emit('roomsList', gameRoomManager.getAllRooms());
+        });
+
+        socket.on('leaveRoom', (roomId) => {
+            const room = gameRoomManager.getRoom(roomId);
+            if (room) {
+                gameRoomManager.leaveRoom(roomId, socket.userId);
+                socket.leave(roomId);
+                io.to(roomId).emit('playerLeft', socket.userId);
+                io.emit('roomsList', gameRoomManager.getAllRooms());
+            }
+        });
+
+        socket.on('gameAction', ({ roomId, action }) => {
+            const room = gameRoomManager.getRoom(roomId);
+            if (!room) return;
+
+            const gameLogic = gameLogics[room.gameId];
+            if (!gameLogic) return;
+
+            let newGameState;
+            if (action.type === 'move') {
+                newGameState = gameLogic.handleMove(room.gameState, socket.userId, action.payload);
+            } else if (action.type === 'attack') {
+                newGameState = gameLogic.handleAttack(room.gameState, socket.userId, action.payload.targetId, action.payload.attackType);
+            }
+
+            if (newGameState) {
+                gameRoomManager.updateGameState(roomId, newGameState);
+                io.to(roomId).emit('gameUpdate', newGameState);
+
+                // Check for victory condition
+                const room = gameRoomManager.getRoom(roomId);
+                if (room.options.isTeamMode) {
+                    const activeTeams = new Set();
+                    Object.values(newGameState.players).forEach(p => {
+                        if (!p.isGameOver) {
+                            activeTeams.add(p.team);
+                        }
+                    });
+                    if (activeTeams.size <= 1 && Object.values(newGameState.players).length > 1) {
+                        const winningTeam = activeTeams.size === 1 ? activeTeams.values().next().value : null;
+                        io.to(roomId).emit('gameEnd', { winner: winningTeam, finalState: newGameState, isTeamWin: true });
+                    }
+                } else {
+                    const activePlayers = Object.values(newGameState.players).filter(p => !p.isGameOver);
+                    if (activePlayers.length <= 1 && Object.values(newGameState.players).length > 1) {
+                        const winner = activePlayers.length === 1 ? activePlayers[0] : null;
+                        io.to(roomId).emit('gameEnd', { winner, finalState: newGameState, isTeamWin: false });
+                    }
+                }
+            }
+        });
+
         socket.on('disconnect', async () => {
             console.log(`[Socket] User disconnected: ${socket.id}`);
             const userId = await socketRepository.removeSocketId(socket.id);
             if (userId) {
+                // Handle room departure on disconnect
+                const rooms = gameRoomManager.getAllRooms();
+                for (const room of rooms) {
+                    if (room.players.some(p => p.id === userId)) {
+                        gameRoomManager.leaveRoom(room.id, userId);
+                        io.to(room.id).emit('playerLeft', userId);
+                        io.emit('roomsList', gameRoomManager.getAllRooms());
+                    }
+                }
+
                 const timer = setTimeout(async () => {
                     const socketCount = await client.sCard(`user:sockets:${userId}`);
                     console.log(`[Socket] User ${userId} has ${socketCount} sockets remaining after delay.`);

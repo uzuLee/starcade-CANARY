@@ -6,6 +6,7 @@ const slider = require('./slider');
 const slot = require('./slot');
 const sudoku = require('./sudoku');
 const wordle = require('./wordle');
+const arena2048 = require('./arena2048');
 
 module.exports = [
     blackjack,
@@ -16,4 +17,5 @@ module.exports = [
     slot,
     sudoku,
     wordle,
+    arena2048,
 ];
