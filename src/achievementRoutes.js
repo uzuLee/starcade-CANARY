@@ -2,8 +2,10 @@ const { getAllAchievementDefinitions } = require('./achievementManager');
 
 module.exports = (app) => {
     app.get('/api/achievements', (req, res) => {
+        console.log('GET /api/achievements route hit');
         try {
             const definitions = getAllAchievementDefinitions();
+            console.log('Successfully got achievement definitions.');
             res.json({ success: true, achievements: definitions });
         } catch (error) {
             console.error('Error fetching achievement definitions:', error);

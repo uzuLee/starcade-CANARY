@@ -1,8 +1,13 @@
 const allAchievementsArray = require('./achievements');
+console.log('achievementManager.js: Loaded achievements index.');
 const { getAllEffects } = require('./effectManager');
+console.log('achievementManager.js: Loaded effectManager.');
 const { getAllCardEffects } = require('./cardEffectManager');
+console.log('achievementManager.js: Loaded cardEffectManager.');
 const { getAllProfileDecorations } = require('./profileDecorationManager');
+console.log('achievementManager.js: Loaded profileDecorationManager.');
 const { getAllCardDecorations } = require('./cardDecorationManager');
+console.log('achievementManager.js: Loaded cardDecorationManager.');
 
 const achievements = allAchievementsArray.reduce((obj, item) => {
     if (item && item.id) {
@@ -10,6 +15,7 @@ const achievements = allAchievementsArray.reduce((obj, item) => {
     }
     return obj;
 }, {});
+console.log('achievementManager.js: Created achievements object.');
 
 const evaluateAchievements = (currentUser, gameData, scoreData) => {
     if (!currentUser) return { unlockedAchievements: [], newlyUnlockedEffects: [], newlyUnlockedTitles: [] };
@@ -102,7 +108,15 @@ const evaluateAchievements = (currentUser, gameData, scoreData) => {
 };
 
 const getAllAchievementDefinitions = () => {
-    return Object.values(achievements).map(({ evaluate, ...rest }) => rest);
+    console.log('getAllAchievementDefinitions called.');
+    try {
+        const result = Object.values(achievements).map(({ evaluate, ...rest }) => rest);
+        console.log(`getAllAchievementDefinitions returning ${result.length} definitions.`);
+        return result;
+    } catch (e) {
+        console.error('Error in getAllAchievementDefinitions:', e);
+        return [];
+    }
 };
 
 module.exports = { evaluateAchievements, getAllAchievementDefinitions };

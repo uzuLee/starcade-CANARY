@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-require('dotenv').config();
+
 
 const isCanary = process.env.APP_ENV === 'canary';
 
