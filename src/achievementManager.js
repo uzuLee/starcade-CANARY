@@ -1,56 +1,15 @@
-const fs = require('fs');
-const path = require('path');
-const chokidar = require('chokidar');
-
-const ACHIEVEMENTS_DIR = path.join(__dirname, 'achievements');
-const achievements = {};
-
+const allAchievementsArray = require('./achievements');
 const { getAllEffects } = require('./effectManager');
 const { getAllCardEffects } = require('./cardEffectManager');
 const { getAllProfileDecorations } = require('./profileDecorationManager');
 const { getAllCardDecorations } = require('./cardDecorationManager');
 
-function loadAchievements() {
-    try {
-        const achievementFolders = fs.readdirSync(ACHIEVEMENTS_DIR, { withFileTypes: true })
-            .filter(dirent => dirent.isDirectory())
-            .map(dirent => dirent.name);
-
-        for (const id in achievements) {
-            delete achievements[id];
-        }
-
-        for (const folder of achievementFolders) {
-            const indexPath = path.join(ACHIEVEMENTS_DIR, folder, 'index.js');
-            if (fs.existsSync(indexPath)) {
-                delete require.cache[require.resolve(indexPath)];
-                const achievementModule = require(indexPath);
-                if (achievementModule && achievementModule.id) {
-                    achievements[achievementModule.id] = achievementModule;
-                }
-            }
-        }
-        console.log('Successfully loaded achievements.');
-    } catch (error) {
-        console.error("Error loading achievements:", error);
+const achievements = allAchievementsArray.reduce((obj, item) => {
+    if (item && item.id) {
+        obj[item.id] = item;
     }
-}
-
-loadAchievements();
-
-if (process.env.NODE_ENV !== 'production') {
-    const watcher = chokidar.watch(path.join(ACHIEVEMENTS_DIR, '**', 'index.js'), {
-        persistent: true,
-        ignoreInitial: true,
-    });
-
-    const reload = (filePath) => {
-        console.log(`Detected change in ${filePath}, reloading achievements...`);
-        loadAchievements();
-    };
-
-    watcher.on('add', reload).on('change', reload).on('unlink', reload);
-}
+    return obj;
+}, {});
 
 const evaluateAchievements = (currentUser, gameData, scoreData) => {
     if (!currentUser) return { unlockedAchievements: [], newlyUnlockedEffects: [], newlyUnlockedTitles: [] };
