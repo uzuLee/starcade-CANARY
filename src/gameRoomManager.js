@@ -12,6 +12,7 @@ const gameRoomManager = {
       hostId: hostPlayer.id,
       players: [hostPlayer],
       gameState: {},
+      status: 'waiting', // waiting, in-progress, finished
       options,
       createdAt: new Date(),
     };
@@ -27,6 +28,9 @@ const gameRoomManager = {
     const room = rooms[roomId];
     if (!room) {
       return { error: 'Room not found' };
+    }
+    if (room.status !== 'waiting') {
+        return { error: 'Game has already started' };
     }
     if (room.players.find(p => p.id === player.id)) {
       return { room };

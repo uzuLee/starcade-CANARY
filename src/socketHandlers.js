@@ -63,10 +63,23 @@ module.exports = (io, { pubClient, subClient }, { userRepository, socketReposito
 
         // Multiplayer Game Room Logic
         socket.on('getRooms', () => {
-            socket.emit('roomsList', gameRoomManager.getAllRooms());
+            io.emit('roomsList', gameRoomManager.getAllRooms());
         });
 
-        socket.on('createRoom', async ({ gameId, options }) => {
+        socket.on('startGame', (roomId) => {
+            const room = gameRoomManager.getRoom(roomId);
+            if (room && room.hostId === socket.userId && room.status === 'waiting') {
+                room.status = 'in-progress';
+                const gameLogic = gameLogics[room.gameId];
+                if (gameLogic) {
+                    room.gameState = gameLogic.initialize(room.players, room.options);
+                    io.to(roomId).emit('gameStart', room.gameState);
+                    io.emit('roomsList', gameRoomManager.getAllRooms());
+                }
+            }
+        });
+
+        socket.on('gameAction', ({ roomId, action }) => {
             const user = await userRepository.getUser(socket.userId);
             if (!user) return;
 
