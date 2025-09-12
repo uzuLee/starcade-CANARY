@@ -1,8 +1,6 @@
 const sample = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 const arena2048Logic = {
-  // Initialize the game state for all players
-  const arena2048Logic = {
   // Initialize the game state for the first player (host)
   initialize(hostPlayer, options) {
     const boardSize = options.boardSize || 4;
