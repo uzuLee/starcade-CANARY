@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const cors = require('cors');
+
 const cookieParser = require('cookie-parser');
 const { createAdapter } = require('@socket.io/redis-adapter');
 
@@ -32,19 +32,25 @@ const titleRoutes = require('./src/titleRoutes');
 const socketHandlers = require('./src/socketHandlers');
 
 const app = express();
-const corsOptions = {
-    origin: [
+app.use((req, res, next) => {
+    const allowedOrigins = [
         'https://uzulee.github.io',
         'http://localhost:5173',
         'http://127.0.0.1:5173',
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-};
+    ];
+    const origin = req.headers.origin;
+    if (allowedOrigins.some(o => origin && origin.startsWith(o))) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-app.options('*', cors(corsOptions));
-app.use(cors(corsOptions));
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(204);
+    }
+    next();
+});
 app.use(cookieParser());
 app.use((req, res, next) => {
     console.log('Server.js: req.cookies =', req.cookies);
